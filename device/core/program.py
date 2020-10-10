@@ -1,0 +1,238 @@
+import time
+from datetime import datetime
+from threading import Thread
+
+import numpy as np
+
+from ..util.simple_event import SimpleEvent
+from .address import Address
+from .config import Config
+from .environment import Environment
+from .fire_command import FireCommand
+from .logger import Logger
+from .timestamp import Timestamp
+
+
+class ProgramError(Exception):
+    pass
+
+
+class InvalidProgram(ProgramError, ValueError):
+    pass
+
+
+class HangingProgramThread(ProgramError, RuntimeError):
+    pass
+
+
+class ProgramNotRunning(ProgramError):
+    pass
+
+
+class ProgramNotPaused(ProgramError):
+    pass
+
+
+class ProgramFinalized(ProgramError):
+    pass
+
+
+class ProgramNotFinalized(ProgramError):
+    pass
+
+
+class Program():
+
+    def __init__(self):
+        self._command_list = list()
+        self._thread = None
+
+        self._pause_event = SimpleEvent()
+        self._continue_event = SimpleEvent()
+        self._stop_event = SimpleEvent()
+
+        self._finalized = False
+
+        self.fired_event = SimpleEvent()
+        self.program_finished_event = SimpleEvent()
+
+    def add_command(self, command):
+        if self._finalized:
+            raise ProgramFinalized()
+        self._command_list.append(command)
+
+    def finalize(self):
+        if self._finalized:
+            raise ProgramFinalized()
+        self._finalized = True
+
+    def run(self):
+        if not self._finalized:
+            raise ProgramNotFinalized()
+        self._thread = Thread(target=self._execution_handler)
+        self._thread.name = "__program_execution_thread__"
+        self._thread.start()
+
+    def pause(self):
+        if not self._finalized:
+            raise ProgramNotFinalized()
+        if not self._thread.is_alive():
+            raise ProgramNotRunning()
+        self._pause_event(sender=self)
+
+    def continue_(self):
+        if not self._finalized:
+            raise ProgramNotFinalized()
+        if not self._thread.is_alive():
+            raise ProgramNotRunning()
+        if not self._pause_event.flag:
+            raise ProgramNotPaused()
+        self._continue_event(sender=self)
+
+    def stop(self):
+        if not self._finalized:
+            raise ProgramNotFinalized()
+        if not self._thread.is_alive():
+            raise ProgramNotRunning()
+        self._stop_event(sender=self)
+        self._thread.join(
+            timeout=Config.get('timeouts', 'program_thread')
+        )
+        self._stop_event.reset()
+        if self._thread.is_alive():
+            raise HangingProgramThread()
+
+    def _pause_handler(self):
+        while not self._continue_event.flag:
+            if self._stop_event.flag:
+                self._pause_event.reset()
+                self._continue_event.reset()
+                return
+            time.sleep(Config.get('timings', 'resolution'))
+        self._continue_event.reset()
+        self._pause_event.reset()
+
+    def _execution_handler(self):
+        logger = Logger(logger_type='auto')  # TODO
+        start_time = datetime.now()
+        pause_time = None
+        command_idx = 0
+
+        while not self._stop_event.flag:
+
+            if self._pause_event.flag:
+                pause_time = datetime.now()
+                self._pause_handler()
+                start_time += (datetime.now() - pause_time)
+
+            time.sleep(Config.get('timings', 'resolution'))
+
+            command = self._command_list[command_idx]
+            timestamp = datetime.now() - start_time
+            if command.timestamp.total_seconds <= timestamp.total_seconds():
+                command.fire()
+                self.fired_event(
+                    sender=self,
+                    raw_address=command.address.raw_address
+                )
+                command_idx += 1
+                if command_idx >= len(self._command_list):
+                    break
+
+        # for command in self._command_list:
+        #     command.join(
+        #         timeout=Config.get('timeouts', 'fire_thread')
+        #     )
+
+        self.program_finished_event(sender=self)
+
+    @property
+    def fuse_status(self):
+        result = Program.empty_fuse_status()
+        for command in self._command_list:
+            letter = command.address.letter
+            number = command.address.number
+            range_ = command.address.range
+
+            for r in range(range_):
+                if command.fired:
+                    result[letter][number + r] = 'fired'
+                elif command.fireing:
+                    result[letter][number + r] = 'fireing'
+                else:
+                    result[letter][number + r] = 'staged'
+        return result
+
+    @classmethod
+    def empty_fuse_status(cls):
+        chips = Config.get('i2c', 'chip_addresses').keys()
+        return {chip: (['none'] * 16) for chip in chips}
+
+    @classmethod
+    def from_command_list(cls, commands):
+        if not isinstance(commands, list):
+            raise InvalidProgram()
+
+        program = Program()
+
+        for raw_command in commands:
+            try:
+                device_id = raw_command['device_id']
+                raw_address = raw_command['address']
+                hours = raw_command['h']
+                minutes = raw_command['m']
+                seconds = raw_command['s']
+                milliseconds = raw_command['ms']
+                name = raw_command['name']
+                description = raw_command['description']
+            except KeyError:
+                raise InvalidProgram()
+
+            if device_id != Environment.get('DEVICE_ID'):
+                continue
+
+            timestamp = Timestamp(
+                hours=hours,
+                minutes=minutes,
+                seconds=seconds,
+                deciseconds=milliseconds  # TODO!
+            )
+
+            command = FireCommand(
+                address=Address(raw_address),
+                timestamp=timestamp,
+                name=name,
+                description=description
+            )
+
+            program.add_command(command)
+
+        program.finalize()
+        return program
+
+    @classmethod
+    def testloop_program(cls):
+        program = Program()
+
+        address_list = Address.full_address_list()
+        for address, timestamp in zip(
+            address_list,
+            [
+                Timestamp(*timestamp_components)
+                for timestamp_components in [
+                    Timestamp.get_timestamp_components(total_seconds)
+                    for total_seconds in np.arange(
+                        0,
+                        len(address_list) * Config.get(
+                            'timings',
+                            'testloop_period'
+                        ),
+                        Config.get('timings', 'testloop_period')
+                    )
+                ]
+            ]
+        ):
+            command = FireCommand(address, timestamp)
+            program.add_command(command)
+
+        return program

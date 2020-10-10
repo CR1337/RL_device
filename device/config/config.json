@@ -1,0 +1,32 @@
+{
+    "i2c": {
+        "chip_addresses": {
+            "a": 96,
+            "b": 97,
+            "c": 98
+        },
+        "bus_address": 1
+    },
+    "timeouts": {
+        "registration": 1.0,
+        "notification": 1.0,
+        "schedule_thread": 1.0,
+        "program_thread": 1.0,
+        "fire_thread": 5.0
+    },
+    "timings": {
+        "resolution": 0.01,
+        "testloop_period": 0.5,
+        "ignition": 1.0,
+        "registration_sleep": 1,
+        "notification_sleep": 0.2,
+        "heartbeat_period": 0.2
+    },
+    "logs": {
+        "max_log_files": 64
+    },
+    "simulation": {
+        "simulate": true,
+        "simulation_file": ""
+    }
+}

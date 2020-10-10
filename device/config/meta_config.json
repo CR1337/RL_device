@@ -1,0 +1,66 @@
+{
+    "i2c": {
+        "chip_addresses": {
+            "type": {},
+            "protected": false
+        },
+        "bus_address": {
+            "type": 0,
+            "protected": false
+        }
+    },
+    "timeouts": {
+        "registration": {
+            "type": 0.0,
+            "protected": false
+        },
+        "notification": {
+            "type": 0.0,
+            "protected": false
+        },
+        "schedule_thread": {
+            "type": 0.0,
+            "protected": false
+        },
+        "program_thread": {
+            "type": 0.0,
+            "protected": false
+        },
+        "fire_thread": {
+            "type": 0.0,
+            "protected": false
+        }
+    },
+    "timings": {
+        "resolution": {
+            "type": 0.0,
+            "protected": false
+        },
+        "testloop_period": {
+            "type": 0.0,
+            "protected": false
+        },
+        "ignition": {
+            "type": 0.0,
+            "protected": false
+        },
+        "registration_sleep": {
+            "type": 0.0,
+            "protected": false
+        },
+        "notification_sleep": {
+            "type": 0.0,
+            "protected": false
+        },
+        "heartbeat_period": {
+            "type": 0.0,
+            "protected": false
+        }
+    },
+    "logs": {
+        "max_log_files": {
+            "type": 0,
+            "protected": false
+        }
+    }
+}
