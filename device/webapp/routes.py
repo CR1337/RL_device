@@ -309,7 +309,7 @@ def route_master_listener():
 @log
 def route_system_time():
     if request.method == "GET":
-        return datetime.datetime.now().isoformat()
+        return datetime.now().isoformat()
     elif request.method == "POST":
         data = request.get_json(force=True)
         year = int(data['year']) if 'year' in data else 0
@@ -322,6 +322,7 @@ def route_system_time():
         set_system_time(
             year, month, day, hour, minute, second, millisecond
         )
+        return make_response(dict())
 
 
 @api_bp.after_request
