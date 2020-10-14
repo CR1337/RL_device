@@ -19,18 +19,18 @@ if Environment.get("SIMULATE_HARDWARE"):
         def write_byte_data(self, i2c_address, reg_address, value):
             print("Write:", i2c_address, reg_address, value)
             with open(
-                "../simulator/simulation_data.json", 'r', encoding='utf-8'
+                "../RL_simulator/simulation_data.json", 'r', encoding='utf-8'
             ) as file:
                 simulation_data = json.load(file)
             simulation_data[str(i2c_address)][reg_address] = value
             with open(
-                "../simulator/simulation_data.json", 'w', encoding='utf-8'
+                "../RL_simulator/simulation_data.json", 'w', encoding='utf-8'
             ) as file:
                 json.dump(simulation_data, file)
 
         def read_byte_data(self, i2c_address, reg_address):
             with open(
-                "../simulator/simulation_data.json", 'r', encoding='utf-8'
+                "../RL_simulator/simulation_data.json", 'r', encoding='utf-8'
             ) as file:
                 simulation_data = json.load(file)
             value = simulation_data[str(i2c_address)][reg_address]
