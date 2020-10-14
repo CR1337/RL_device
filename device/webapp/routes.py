@@ -15,6 +15,7 @@ from ..core.logger import Logger
 from ..core.address import Address
 from ..core.master_communication import MasterCommunicator
 from .auth import authenticate, sign_message
+from ..util.sys_time import set_system_time
 
 api_bp = Blueprint('api_blueprint', __name__)
 logger = Logger(logger_type='rest')
@@ -299,6 +300,28 @@ def route_master_listener():
         response = dict()
 
     return make_response(response)
+
+
+@api_bp.route("/system-time", methods=["GET", "POST"], endpoint='route_system_time')
+@authentify
+@handle_exceptions
+@sign_response
+@log
+def route_system_time():
+    if request.method == "GET":
+        return datetime.datetime.now().isoformat()
+    elif request.method == "POST":
+        data = request.get_json(force=True)
+        year = int(data['year']) if 'year' in data else 0
+        month = int(data['month']) if 'month' in data else 0
+        day = int(data['day']) if 'day' in data else 0
+        hour = int(data['hour']) if 'hour' in data else 0
+        minute = int(data['minute']) if 'minute' in data else 0
+        second = int(data['second']) if 'second' in data else 0
+        millisecond = int(data['millisecond']) if 'millisecond' in data else 0
+        set_system_time(
+            year, month, day, hour, minute, second, millisecond
+        )
 
 
 @api_bp.after_request

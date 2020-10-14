@@ -1,6 +1,6 @@
-[
-    "INTERNAL_PORT",
-    "EXTERNAL_PORT",
-    "DEVICE_ID",
-    "SIMULATE_HARDWARE"
-]
+{
+    "INTERNAL_PORT": 5000,
+    "EXTERNAL_PORT": 5000,
+    "DEVICE_ID": "sat1",
+    "SIMULATE_HARDWARE": true
+}
