@@ -9,7 +9,11 @@ if __name__ == '__main__':
             use_debugger=True,
             use_reloader=True,
             passthrough_errors=True,
-            port=Environment.get('INTERNAL_PORT')
+            port=Environment.get('INTERNAL_PORT'),
+            host="0.0.0.0"
         )
     else:
-        app.run(port=Environment.get('INTERNAL_PORT'))
+        app.run(port=Environment.get(
+            'INTERNAL_PORT'),
+            host="0.0.0.0"
+        )
