@@ -46,7 +46,7 @@ def handle_exceptions(func):
                 'exception_args': vars(exc)
             }
             status_code = status.HTTP_400_BAD_REQUEST
-            response = make_response(content, status_code)
+            response = make_response((content, status_code))
             logger.exception(f"Exception occured in {request.url}.")
         finally:
             return response
