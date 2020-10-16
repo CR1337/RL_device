@@ -119,7 +119,7 @@ def route_config():
 @log
 def route_environment():
     if 'key' in request.args:
-        value = Environment[request.args['key']]
+        value = Environment.get(request.args['key'])
         response = {request.args['key']: value}
     else:
         response = Environment.get_all()
