@@ -2,5 +2,5 @@
     "INTERNAL_PORT": 5000,
     "EXTERNAL_PORT": 5000,
     "DEVICE_ID": "sat1",
-    "SIMULATE_HARDWARE": true
+    "SIMULATE_HARDWARE": false
 }
