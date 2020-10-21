@@ -26,7 +26,12 @@
         "max_log_files": 64
     },
     "simulation": {
-        "simulate": true,
+        "simulate": false,
         "simulation_file": ""
+    },
+    "connection": {
+        "internal_port": 5000,
+        "external_port": 5000,
+        "device_id": "sat1"
     }
 }

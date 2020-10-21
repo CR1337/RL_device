@@ -188,7 +188,7 @@ class Program():
             except KeyError:
                 raise InvalidProgram()
 
-            if device_id != Environment.get('DEVICE_ID'):
+            if device_id != Config.get("connection", 'device_id'):
                 continue
 
             timestamp = Timestamp(

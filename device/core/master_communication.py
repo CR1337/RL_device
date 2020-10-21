@@ -7,7 +7,6 @@ import requests
 
 from ..util.simple_event import SimpleEvent
 from .config import Config
-from .environment import Environment
 from .logger import Logger
 from .fire_controller import FireController
 
@@ -101,7 +100,7 @@ class MasterCommunicator():
 
     @classmethod
     def _notify(cls, data):
-        data['device_id'] = Environment.get('DEVICE_ID')
+        data['device_id'] = Config.get("connection", 'device_id')
         if not cls._master_registered:
             # raise NotRegistered()  # TODO: reacivate
             ...

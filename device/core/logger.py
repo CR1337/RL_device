@@ -6,7 +6,6 @@ from logging.handlers import RotatingFileHandler
 
 from ..util.simple_event import SimpleEvent
 from .config import Config
-from .environment import Environment
 
 
 class LoggingError(Exception):
@@ -34,7 +33,7 @@ class Logger():
     if not os.path.exists(_LOG_DIRECTORY):
         raise NoLogDirectory(_LOG_DIRECTORY)
     _LOG_FILENAME = ".".join([
-        Environment.get('DEVICE_ID'),
+        Config.get("connection", 'device_id'),
         "log"
     ])
     _full_log_filename = os.path.join(_LOG_DIRECTORY, _LOG_FILENAME)

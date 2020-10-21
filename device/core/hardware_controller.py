@@ -4,11 +4,9 @@ from threading import Lock
 
 from .address import Address
 from .config import Config
-from .environment import Environment
 
-# SIMULATE_HARDWARE = True
 
-if Environment.get("SIMULATE_HARDWARE"):
+if Config.get("simulation", "simulate"):
     class SMBus():
 
         def __init__(self, bus_address):

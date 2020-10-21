@@ -62,5 +62,29 @@
             "type": 0,
             "protected": false
         }
+    },
+    "simulation": {
+        "simulate": {
+            "type": false,
+            "protected": false
+        },
+        "simulation_file": {
+            "type": "",
+            "protected": false
+        }
+    },
+    "connection": {
+        "internal_port": {
+            "type": 0,
+            "protected": false
+        },
+        "external_port": {
+            "type": 0,
+            "protected": false
+        },
+        "device_id":{
+            "type": "",
+            "protected": false
+        }
     }
 }

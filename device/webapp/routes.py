@@ -7,7 +7,6 @@ from flask import (Blueprint, make_response, render_template,
 from flask_api import status
 
 from ..core.config import Config
-from ..core.environment import Environment
 from ..core.fire_command import FireCommand
 from ..core.fire_controller import FireController
 from ..core.hardware_controller import HardwareController
@@ -25,6 +24,7 @@ def authentify(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         return func(*args, **kwargs)
+        # TODO: do authentication
         if not authenticate(request) and not request.method == 'GET':
             logger.warning(
                 f"Unauthorized request from {request.host} to {request.url}.")
@@ -82,8 +82,8 @@ def log(func):
 def route_main():
     return render_template(
         "index.html",
-        device_id=Environment.get('DEVICE_ID'),
-        port=Environment.get('EXTERNAL_PORT'),
+        device_id=Config.get("connection", 'device_id'),
+        port=Config.get("connection", 'external_port'),
         time=datetime.now()
     )
 
@@ -112,18 +112,18 @@ def route_config():
     return make_response(response)
 
 
-@api_bp.route("/environment", methods=["GET"], endpoint='route_environment')
-@authentify
-@handle_exceptions
-@sign_response
-@log
-def route_environment():
-    if 'key' in request.args:
-        value = Environment.get(request.args['key'])
-        response = {request.args['key']: value}
-    else:
-        response = Environment.get_all()
-    return make_response(response)
+# @api_bp.route("/environment", methods=["GET"], endpoint='route_environment')
+# @authentify
+# @handle_exceptions
+# @sign_response
+# @log
+# def route_environment():
+#     if 'key' in request.args:
+#         value = Environment.get(request.args['key'])
+#         response = {request.args['key']: value}
+#     else:
+#         response = Environment.get_all()
+#     return make_response(response)
 
 
 @api_bp.route("/program", methods=["POST", "DELETE"], endpoint='route_program')
@@ -159,7 +159,9 @@ def route_program_control():
     elif action == 'stop':
         FireController.stop_program()
     elif action == 'schedule':
-        FireController.schedule_program(request.get_json(force=True)['schedule_time'])
+        FireController.schedule_program(
+            request.get_json(force=True)['schedule_time']
+        )
     elif action == 'unschedule':
         FireController.unschedule_program()
     else:
@@ -267,7 +269,7 @@ def route_logs():
     response = send_file(
         Logger.get_logfiles(amount=request.args['amount']),
         attachment_filename="_".join([
-            Environment.get('DEVICE_ID'), "logs.zip"
+            Config.get("connection", 'device_id'), "logs.zip"
         ]),
         as_attachment=True,
         mimetype="application/zip"
@@ -292,7 +294,7 @@ def route_master_listener():
             port=request.get_json(force=True)['port']
         )
         response = (
-            {'device_id': Environment.get('DEVICE_ID')},
+            {'device_id': Config.get("connection", 'device_id')},
             status.HTTP_202_ACCEPTED
         )
     elif request.method == "DELETE":
@@ -302,7 +304,10 @@ def route_master_listener():
     return make_response(response)
 
 
-@api_bp.route("/system-time", methods=["GET", "POST"], endpoint='route_system_time')
+@api_bp.route(
+    "/system-time", methods=["GET", "POST"],
+    endpoint='route_system_time'
+)
 @authentify
 @handle_exceptions
 @sign_response
