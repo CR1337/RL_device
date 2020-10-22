@@ -108,22 +108,8 @@ def route_config():
             response = Config.get_all()
     elif request.method == "POST":
         Config.update_many(request.get_json(force=True)['entries'])
-        response = ""
+        response = dict()
     return make_response(response)
-
-
-# @api_bp.route("/environment", methods=["GET"], endpoint='route_environment')
-# @authentify
-# @handle_exceptions
-# @sign_response
-# @log
-# def route_environment():
-#     if 'key' in request.args:
-#         value = Environment.get(request.args['key'])
-#         response = {request.args['key']: value}
-#     else:
-#         response = Environment.get_all()
-#     return make_response(response)
 
 
 @api_bp.route("/program", methods=["POST", "DELETE"], endpoint='route_program')
@@ -215,8 +201,7 @@ def route_fuses():
     return make_response(FireController.get_fuse_status())
 
 
-# FIXME: GET only for debugging
-@api_bp.route("/testloop", methods=["POST", "GET"], endpoint='route_testloop')
+@api_bp.route("/testloop", methods=["POST"], endpoint='route_testloop')
 @authentify
 @handle_exceptions
 @sign_response
@@ -256,7 +241,7 @@ def route_errors():
         response = HardwareController.errors()
     elif request.method == "DELETE":
         HardwareController.clear_error_flags()
-        response = ""
+        response = dict()
     return make_response(response)
 
 
@@ -314,7 +299,9 @@ def route_master_listener():
 @log
 def route_system_time():
     if request.method == "GET":
-        return datetime.now().isoformat()
+        return make_response(
+            {'system_time': datetime.now().isoformat()}
+        )
     elif request.method == "POST":
         data = request.get_json(force=True)
         year = int(data['year']) if 'year' in data else 0

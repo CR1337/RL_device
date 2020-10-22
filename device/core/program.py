@@ -7,7 +7,6 @@ import numpy as np
 from ..util.simple_event import SimpleEvent
 from .address import Address
 from .config import Config
-from .environment import Environment
 from .fire_command import FireCommand
 from .logger import Logger
 from .timestamp import Timestamp
