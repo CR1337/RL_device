@@ -34,9 +34,9 @@ class AlreadyJoined(FireCommandError):
 
 class FireCommand():
 
-    def __init__(self, address, timestamp, name=None, description=None):
+    def __init__(self, address, timestamp=None, name=None, description=None):
         self._address = address
-        self._timestamp = timestamp if timestamp is not None else None  # FIXME
+        self._timestamp = timestamp
         self._name = name
         self._description = description
         self._thread = Thread(target=self._fire_handler)

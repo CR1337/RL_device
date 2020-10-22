@@ -174,21 +174,12 @@ def route_program_state():
 @sign_response
 @log
 def route_fire():
-    # FIXME: GET only for debugging
-    if request.method == "GET":
-        address = Address('a1')
-        fire_command = FireCommand(
-            address=address,
-            timestamp=0
-        )
-        fire_command.fire()
-    else:
-        address = Address(request.get_json(force=True)['address'])
-        fire_command = FireCommand(
-            address=address,
-            timestamp=0
-        )
-        fire_command.fire()
+    address = Address(request.get_json(force=True)['address'])
+    fire_command = FireCommand(
+        address=address,
+        timestamp=0
+    )
+    fire_command.fire()
     return make_response(dict())
 
 
