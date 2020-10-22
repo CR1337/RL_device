@@ -8,7 +8,6 @@ from ..util.simple_event import SimpleEvent
 from .address import Address
 from .config import Config
 from .fire_command import FireCommand
-from .logger import Logger
 from .timestamp import Timestamp
 
 
@@ -112,7 +111,6 @@ class Program():
         self._pause_event.reset()
 
     def _execution_handler(self):
-        logger = Logger(logger_type='auto')  # TODO
         start_time = datetime.now()
         pause_time = None
         command_idx = 0

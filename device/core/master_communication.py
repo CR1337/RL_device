@@ -7,7 +7,6 @@ import requests
 
 from ..util.simple_event import SimpleEvent
 from .config import Config
-from .logger import Logger
 from .fire_controller import FireController
 
 
@@ -108,7 +107,6 @@ class MasterCommunicator():
 
     @classmethod
     def _notification_handler(cls):
-        logger = Logger(logger_type='auto')
         counters = {
             'timeout': 0,
             'http_error': 0,
@@ -133,33 +131,26 @@ class MasterCommunicator():
                     for key in counters.keys():
                         if counters[key] > 0:
                             counters[key] = 0
-                            logger.info(
-                                f"Success in _heartbeat_handler after "
-                                + f"{counters[key]} times {key}."
-                            )
+                            ...  # TODO
 
                 except requests.Timeout:
                     if counters['timeout'] == 0:
-                        logger.exception("Timeout in _heartbeat_handler")
+                        ...  # TODO
                     counters['timeout'] += 1
 
                 except requests.HTTPError:
                     if counters['http_error'] == 0:
-                        logger.exception("HTTPError in _heartbeat_handler")
+                        ...  # TODO
                     counters['http_error'] += 1
 
                 except requests.ConnectionError:
                     if counters['connection_error'] == 0:
-                        logger.exception(
-                            "ConnectionError in _heartbeat_handler"
-                        )
+                        ...  # TODO
                     counters['connection_error'] += 1
 
                 except requests.RequestException:
                     if counters['request_exception'] == 0:
-                        logger.exception(
-                            "RequestException in _heartbeat_handler"
-                        )
+                        ...  # TODO
                     counters['request_exception'] += 1
 
                 else:
@@ -173,7 +164,6 @@ class MasterCommunicator():
 
     @classmethod
     def _heartbeat_handler(cls):
-        logger = Logger(logger_type='auto')
         counters = {
             'timeout': 0,
             'http_error': 0,
@@ -204,22 +194,22 @@ class MasterCommunicator():
 
             except requests.Timeout:
                 if counters['timeout'] == 0:
-                    logger.exception("Timeout in _heartbeat_handler")
+                    ...  # TODO
                 counters['timeout'] += 1
 
             except requests.HTTPError:
                 if counters['http_error'] == 0:
-                    logger.exception("HTTPError in _heartbeat_handler")
+                    ...  # TODO
                 counters['http_error'] += 1
 
             except requests.ConnectionError:
                 if counters['connection_error'] == 0:
-                    logger.exception("ConnectionError in _heartbeat_handler")
+                    ...  # TODO
                 counters['connection_error'] += 1
 
             except requests.RequestException:
                 if counters['request_exception'] == 0:
-                    logger.exception("RequestException in _heartbeat_handler")
+                    ...  # TODO
                 counters['request_exception'] += 1
 
             time.sleep(Config.get('timings', 'heartbeat_period'))

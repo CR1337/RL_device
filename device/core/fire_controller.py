@@ -7,7 +7,6 @@ from time import sleep
 from ..util.simple_event import SimpleEvent
 from .address import Address
 from .config import Config
-from .logger import Logger
 from .fire_command import FireCommand
 from .hardware_controller import HardwareController, HardwareLocked
 from .program import Program
@@ -295,29 +294,23 @@ class FireController():
 
     @classmethod
     def _schedule_handler(cls):
-        logger = Logger(logger_type='auto')
         while not cls._unschedule_event.flag:
             current_time = datetime.now()
-            current_time_str = f"{current_time.hour:02}:{current_time.minute:02}:{current_time.second:02}"
+            current_time_str = f"{current_time.hour:02}:" \
+                "{current_time.minute:02}:{current_time.second:02}"
             if current_time_str >= cls._scheduled_time:
                 break
             try:
                 sleep(Config.get('timings', 'resolution'))
             except Exception:
-                logger.exception(
-                    f"Exception while waiting for scheduled program "
-                    + f"at {cls._scheduled_time}."
-                )
+                ...  # TODO
         else:
             cls._unschedule_event.reset()
             return
         try:
             cls._run_program()
         except Exception:
-            logger.exception(
-                f"Exception while executing scheduled program "
-                + f"at {cls._scheduled_time}."
-            )
+            ...  # TODO
         cls.run_scheduled_program_event(sender=cls)
 
     @classmethod

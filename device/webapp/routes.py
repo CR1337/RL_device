@@ -10,14 +10,12 @@ from ..core.config import Config
 from ..core.fire_command import FireCommand
 from ..core.fire_controller import FireController
 from ..core.hardware_controller import HardwareController
-from ..core.logger import Logger
 from ..core.address import Address
 from ..core.master_communication import MasterCommunicator
 from .auth import authenticate, sign_message
 from ..util.sys_time import set_system_time
 
 api_bp = Blueprint('api_blueprint', __name__)
-logger = Logger(logger_type='rest')
 
 
 def authentify(func):
@@ -26,8 +24,7 @@ def authentify(func):
         return func(*args, **kwargs)
         # TODO: do authentication
         if not authenticate(request) and not request.method == 'GET':
-            logger.warning(
-                f"Unauthorized request from {request.host} to {request.url}.")
+            ...  # TODO
             return "", status.HTTP_401_UNAUTHORIZED
         else:
             return func(*args, **kwargs)

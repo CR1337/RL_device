@@ -2,9 +2,7 @@ import time
 from threading import Thread
 
 from .config import Config
-from .logger import Logger
 from .hardware_controller import HardwareController
-from .address import Address
 
 
 class FireCommandError(Exception):
@@ -45,27 +43,22 @@ class FireCommand():
         self._fireing = False
 
     def _fire_handler(self):
-        logger = Logger(logger_type='auto')
         self._fireing = True
 
         try:
             HardwareController.light(self._address)
         except Exception:
-            logger.exception(f"Exception when lighting {self._address}.")
+            ... # TODO
 
         try:
             time.sleep(Config.get('timings', 'ignition'))
         except Exception:
-            logger.exception(
-                f"Exception while waiting for unlighting {self._address}."
-            )
+            ... # TODO
 
         try:
             HardwareController.unlight(self._address)
         except Exception:
-            logger.exception(
-                f"Exception when unlighting {self._address}."
-            )
+            ... # TODO
 
         self._fireing, self._fired = False, True
 
@@ -73,17 +66,6 @@ class FireCommand():
         if self._fired or self._fireing:
             raise AlreadyFired(self._address)
         self._thread.start()
-
-    # def join(self, timeout=None):
-    #     try:
-    #         self._thread.join(timeout=timeout)
-    #     except RuntimeError:
-    #         raise AlreadyJoined(self._address)
-    #     else:
-    #         if not self._fired or self._fireing:
-    #             raise CommandNotFired(self._address)
-    #     if self._thread.is_alive():
-    #         raise HangingFireThread(self._address)
 
     @property
     def address(self):
