@@ -44,7 +44,6 @@ def handle_exceptions(func):
             }
             status_code = status.HTTP_400_BAD_REQUEST
             response = make_response((content, status_code))
-            logger.exception(f"Exception occured in {request.url}.")
         finally:
             return response
     return wrapper
@@ -60,22 +59,7 @@ def sign_response(func):
     return wrapper
 
 
-def log(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if request.method == 'GET':
-            logger.info(f"GET Request from {request.host}: {request.args}")
-        else:
-            logger.info(
-                f"{request.method} Request from {request.host} "
-                + f"to {request.url}: {request.get_json(force=True)}"
-            )
-        return func(*args, **kwargs)
-    return wrapper
-
-
 @api_bp.route("/", methods=["GET"], endpoint='route_main')
-@log
 def route_main():
     return render_template(
         "index.html",
@@ -89,7 +73,6 @@ def route_main():
 @authentify
 @handle_exceptions
 @sign_response
-@log
 def route_config():
     if request.method == "GET":
         if 'category' in request.args:
@@ -113,7 +96,6 @@ def route_config():
 @authentify
 @handle_exceptions
 @sign_response
-@log
 def route_program():
     if request.method == "DELETE":
         FireController.delete_program()
@@ -130,7 +112,6 @@ def route_program():
 @authentify
 @handle_exceptions
 @sign_response
-@log
 def route_program_control():
     action = request.get_json(force=True)['action']
     if action == 'run':
@@ -160,7 +141,6 @@ def route_program_control():
 @authentify
 @handle_exceptions
 @sign_response
-@log
 def route_program_state():
     return make_response({'state': FireController.get_program_state()})
 
@@ -169,7 +149,6 @@ def route_program_state():
 @authentify
 @handle_exceptions
 @sign_response
-@log
 def route_fire():
     address = Address(request.get_json(force=True)['address'])
     fire_command = FireCommand(
@@ -184,7 +163,6 @@ def route_fire():
 @authentify
 @handle_exceptions
 @sign_response
-@log
 def route_fuses():
     return make_response(FireController.get_fuse_status())
 
@@ -193,7 +171,6 @@ def route_fuses():
 @authentify
 @handle_exceptions
 @sign_response
-@log
 def route_testloop():
     FireController.testloop()
     return make_response(dict())
@@ -203,7 +180,6 @@ def route_testloop():
 @authentify
 @handle_exceptions
 @sign_response
-@log
 def route_lock():
     if request.method == "GET":
         return make_response({'locked': HardwareController.is_locked()})
@@ -223,7 +199,6 @@ def route_lock():
 @authentify
 @handle_exceptions
 @sign_response
-@log
 def route_errors():
     if request.method == "GET":
         response = HardwareController.errors()
@@ -233,24 +208,6 @@ def route_errors():
     return make_response(response)
 
 
-@api_bp.route("/logs", methods=["GET"], endpoint='route_logs')
-@authentify
-@handle_exceptions
-@sign_response
-@log
-def route_logs():
-    response = send_file(
-        Logger.get_logfiles(amount=request.args['amount']),
-        attachment_filename="_".join([
-            Config.get("connection", 'device_id'), "logs.zip"
-        ]),
-        as_attachment=True,
-        mimetype="application/zip"
-    )
-    response.direct_passthrough = False
-    return response
-
-
 @api_bp.route(
     "/master-registration",
     methods=["POST", "DELETE"], endpoint='route_master_listener'
@@ -258,7 +215,6 @@ def route_logs():
 @authentify
 @handle_exceptions
 @sign_response
-@log
 def route_master_listener():
     if request.method == "POST":
         MasterCommunicator.register_master(
@@ -284,7 +240,6 @@ def route_master_listener():
 @authentify
 @handle_exceptions
 @sign_response
-@log
 def route_system_time():
     if request.method == "GET":
         return make_response(
