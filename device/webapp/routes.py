@@ -304,16 +304,16 @@ def route_system_time():
         )
     elif request.method == "POST":
         data = request.get_json(force=True)
-        year = int(data['year']) if 'year' in data else 0
-        month = int(data['month']) if 'month' in data else 0
-        day = int(data['day']) if 'day' in data else 0
-        hour = int(data['hour']) if 'hour' in data else 0
-        minute = int(data['minute']) if 'minute' in data else 0
-        second = int(data['second']) if 'second' in data else 0
-        millisecond = int(data['millisecond']) if 'millisecond' in data else 0
-        set_system_time(
-            year, month, day, hour, minute, second, millisecond
-        )
+        time_params = {
+            'year': 0, 'month': 0, 'day': 0,
+            'hour': 0, 'minute': 0, 'second': 0, 'millisecond': 0
+        }
+        for key in time_params.keys():
+            try:
+                time_params[key] = int(data[key])
+            except (ValueError, KeyError):
+                continue
+        set_system_time(**time_params)
         return make_response(dict())
 
 
