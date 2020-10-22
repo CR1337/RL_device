@@ -2,8 +2,7 @@ import sys
 from datetime import datetime
 from functools import wraps
 
-from flask import (Blueprint, make_response, render_template,
-                   request, send_file)
+from flask import Blueprint, make_response, render_template, request
 from flask_api import status
 
 from ..core.config import Config
