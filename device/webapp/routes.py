@@ -211,9 +211,3 @@ def route_system_time():
                 continue
         set_system_time(**time_params)
         return make_response(dict())
-
-
-@api_bp.after_request
-def after_request(response):
-    response.direct_passthrough = False
-    return response
