@@ -169,9 +169,7 @@ def route_errors():
     "/master-registration",
     methods=["POST", "DELETE"], endpoint='route_master_listener'
 )
-@authentify
 @handle_exceptions
-@sign_response
 def route_master_listener():
     if request.method == "POST":
         MasterCommunicator.register_master(
