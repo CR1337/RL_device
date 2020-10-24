@@ -48,17 +48,17 @@ class FireCommand():
         try:
             HardwareController.light(self._address)
         except Exception:
-            ... # TODO
+            ...  # TODO
 
         try:
             time.sleep(Config.get('timings', 'ignition'))
         except Exception:
-            ... # TODO
+            ...  # TODO
 
         try:
             HardwareController.unlight(self._address)
         except Exception:
-            ... # TODO
+            ...  # TODO
 
         self._fireing, self._fired = False, True
 

@@ -2,10 +2,12 @@ import hmac
 from hashlib import sha1
 
 _SECRET_FILENAME = "device/config/secret"
-#_SECRET_FILENAME = "device/config/secret"
+# _SECRET_FILENAME = "device/config/secret"
 
-with open(_SECRET_FILENAME, 'rb') as file:
-    _secret = file.read()
+# with open(_SECRET_FILENAME, 'rb') as file:
+#     _secret = file.read()
+
+_secret = b"blubb"
 
 
 def sign_message(message):

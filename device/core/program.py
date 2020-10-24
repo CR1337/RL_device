@@ -174,14 +174,20 @@ class Program():
 
         for raw_command in commands:
             try:
-                device_id = raw_command['device_id']
-                raw_address = raw_command['address']
+                device_id = raw_command['device_id'].lower()
+                raw_address = raw_command['address'].lower()
                 hours = raw_command['h']
                 minutes = raw_command['m']
                 seconds = raw_command['s']
                 milliseconds = raw_command['ms']
-                name = raw_command['name']
-                description = raw_command['description']
+                if 'name' in raw_command:
+                    name = raw_command['name']
+                else:
+                    name = ""
+                if ' description' in raw_command:
+                    description = raw_command['description']
+                else:
+                    description = ""
             except KeyError:
                 raise InvalidProgram()
 
