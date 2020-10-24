@@ -11,23 +11,9 @@ from ..core.fire_controller import FireController
 from ..core.hardware_controller import HardwareController
 from ..core.address import Address
 from ..core.master_communication import MasterCommunicator
-from .auth import authenticate, sign_message
 from ..util.sys_time import set_system_time
 
 api_bp = Blueprint('api_blueprint', __name__)
-
-
-def authentify(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        return func(*args, **kwargs)
-        # TODO: do authentication
-        if not authenticate(request) and not request.method == 'GET':
-            ...  # TODO
-            return "", status.HTTP_401_UNAUTHORIZED
-        else:
-            return func(*args, **kwargs)
-    return wrapper
 
 
 def handle_exceptions(func):
@@ -48,16 +34,6 @@ def handle_exceptions(func):
     return wrapper
 
 
-def sign_response(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        response = func(*args, **kwargs)
-        message = response.data
-        response.headers['Signature'] = sign_message(message)
-        return response
-    return wrapper
-
-
 @api_bp.route("/", methods=["GET"], endpoint='route_main')
 def route_main():
     return render_template(
@@ -69,9 +45,7 @@ def route_main():
 
 
 @api_bp.route("/config", methods=["GET", "POST"], endpoint='route_config')
-@authentify
 @handle_exceptions
-@sign_response
 def route_config():
     if request.method == "GET":
         if 'category' in request.args:
@@ -92,9 +66,7 @@ def route_config():
 
 
 @api_bp.route("/program", methods=["POST", "DELETE"], endpoint='route_program')
-@authentify
 @handle_exceptions
-@sign_response
 def route_program():
     if request.method == "DELETE":
         FireController.delete_program()
@@ -108,9 +80,7 @@ def route_program():
     "/program/control",
     methods=["POST"], endpoint='route_program_control'
 )
-@authentify
 @handle_exceptions
-@sign_response
 def route_program_control():
     action = request.get_json(force=True)['action']
     if action == 'run':
@@ -137,17 +107,13 @@ def route_program_control():
     "/program/state",
     methods=["GET"], endpoint='route_program_state'
 )
-@authentify
 @handle_exceptions
-@sign_response
 def route_program_state():
     return make_response({'state': FireController.get_program_state()})
 
 
 @api_bp.route("/fire", methods=["POST", "GET"], endpoint='route_fire')
-@authentify
 @handle_exceptions
-@sign_response
 def route_fire():
     address = Address(request.get_json(force=True)['address'])
     fire_command = FireCommand(
@@ -159,26 +125,20 @@ def route_fire():
 
 
 @api_bp.route("/fuses", methods=["GET"], endpoint='route_fuses')
-@authentify
 @handle_exceptions
-@sign_response
 def route_fuses():
     return make_response(FireController.get_fuse_status())
 
 
 @api_bp.route("/testloop", methods=["POST"], endpoint='route_testloop')
-@authentify
 @handle_exceptions
-@sign_response
 def route_testloop():
     FireController.testloop()
     return make_response(dict())
 
 
 @api_bp.route("/lock", methods=["GET", "POST"], endpoint='route_lock')
-@authentify
 @handle_exceptions
-@sign_response
 def route_lock():
     if request.method == "GET":
         return make_response({'locked': HardwareController.is_locked()})
@@ -195,9 +155,7 @@ def route_lock():
 
 
 @api_bp.route("/errors", methods=["GET", "DELETE"], endpoint='route_errors')
-@authentify
 @handle_exceptions
-@sign_response
 def route_errors():
     if request.method == "GET":
         response = HardwareController.errors()
@@ -236,9 +194,7 @@ def route_master_listener():
     "/system-time", methods=["GET", "POST"],
     endpoint='route_system_time'
 )
-@authentify
 @handle_exceptions
-@sign_response
 def route_system_time():
     if request.method == "GET":
         return make_response(
