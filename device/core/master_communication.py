@@ -97,13 +97,19 @@ class MasterCommunicator():
             }
         )
 
+    debug_notify_flag = False
+
     @classmethod
     def _notify(cls, data):
-        data['device_id'] = Config.get("connection", 'device_id')
-        if not cls._master_registered:
-            # raise NotRegistered()  # TODO: reacivate
-            ...
-        cls._notification_queue.put(data)
+        if cls.debug_notify_flag:
+            return
+        else:
+            cls.debug_notify_flag = True
+            data['device_id'] = Config.get("connection", 'device_id')
+            if not cls._master_registered:
+                # raise NotRegistered()  # TODO: reacivate
+                ...
+            cls._notification_queue.put(data)
 
     @classmethod
     def _notification_handler(cls):

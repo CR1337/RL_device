@@ -22,10 +22,6 @@
         "notification_sleep": 0.2,
         "heartbeat_period": 0.2
     },
-    "simulation": {
-        "simulate": true,
-        "simulation_file": ""
-    },
     "connection": {
         "internal_port": 5000,
         "external_port": 5000,

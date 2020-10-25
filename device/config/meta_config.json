@@ -57,16 +57,6 @@
             "protected": false
         }
     },
-    "simulation": {
-        "simulate": {
-            "type": false,
-            "protected": false
-        },
-        "simulation_file": {
-            "type": "",
-            "protected": false
-        }
-    },
     "connection": {
         "internal_port": {
             "type": 0,

@@ -62,7 +62,6 @@ class FireCommand():
             ...  # TODO
 
         MasterCommunicator.notify_fired(
-            sender=self,
             raw_address=self.address.raw_address
         )
 
