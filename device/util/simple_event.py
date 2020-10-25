@@ -38,22 +38,6 @@ class SimpleEvent():
             self._self_object = self_object
 
         def __call__(self, sender, **kwargs):
-            # if isinstance(self._func, classmethod):
-            #     if 'sender' in self._func.__code__.co_varnames:
-            #         self._func.__call__(self._cls_object, sender, **kwargs)
-            #     else:
-            #         self._func.__call__(self._cls_object, **kwargs)
-            # elif isinstance(self._func, types.MethodType):
-            #     if 'sender' in self._func.__code__.co_varnames:
-            #         self._func.__call__(self._self_object, sender, **kwargs)
-            #     else:
-            #         self._func.__call__(self._self_object, **kwargs)
-            # else:
-            #     if 'sender' in self._func.__code__.co_varnames:
-            #         self._func.__call__(sender, **kwargs)
-            #     else:
-            #         self._func.__call__(**kwargs)
-
             if 'sender' in self._func.__code__.co_varnames:
                 kwargs['sender'] = sender
             self._func.__call__(**kwargs)
@@ -128,10 +112,6 @@ class SimpleEvent():
     @property
     def subscription_count(self):
         return len(self._handlers)
-
-    @property
-    def sender(self):
-        return self._sender
 
     @property
     def flag(self):

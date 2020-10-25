@@ -1,4 +1,4 @@
-let error_url = "http://" + ip_address + ":" + port + "/error";
+let error_url = "http://" + ip_address + ":" + port + "/errors";
 
 fetch(error_url)
     .then((resp) => resp.json())

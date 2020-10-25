@@ -22,9 +22,6 @@
         "notification_sleep": 0.2,
         "heartbeat_period": 0.2
     },
-    "logs": {
-        "max_log_files": 64
-    },
     "simulation": {
         "simulate": true,
         "simulation_file": ""
