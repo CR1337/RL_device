@@ -4,7 +4,7 @@ from threading import Thread
 
 import numpy as np
 
-from ..util.simple_event import SimpleEvent
+from .master_communication import MasterCommunicator
 from .address import Address
 from .config import Config
 from .fire_command import FireCommand
@@ -45,14 +45,11 @@ class Program():
         self._command_list = list()
         self._thread = None
 
-        self._pause_event = SimpleEvent()
-        self._continue_event = SimpleEvent()
-        self._stop_event = SimpleEvent()
+        self._pause_flag = False
+        self._continue_flag = False
+        self._stop_flag = False
 
         self._finalized = False
-
-        self.fired_event = SimpleEvent()
-        self.program_finished_event = SimpleEvent()
 
     def add_command(self, command):
         if self._finalized:
@@ -76,48 +73,48 @@ class Program():
             raise ProgramNotFinalized()
         if not self._thread.is_alive():
             raise ProgramNotRunning()
-        self._pause_event(sender=self)
+        self._pause_flag = True
 
     def continue_(self):
         if not self._finalized:
             raise ProgramNotFinalized()
         if not self._thread.is_alive():
             raise ProgramNotRunning()
-        if not self._pause_event.flag:
+        if not self._pause_flag:
             raise ProgramNotPaused()
-        self._continue_event(sender=self)
+        self._continue_flag = True
 
     def stop(self):
         if not self._finalized:
             raise ProgramNotFinalized()
         if not self._thread.is_alive():
             raise ProgramNotRunning()
-        self._stop_event(sender=self)
+        self._stop_flag = True
         self._thread.join(
             timeout=Config.get('timeouts', 'program_thread')
         )
-        self._stop_event.reset()
+        self._stop_flag = False
         if self._thread.is_alive():
             raise HangingProgramThread()
 
     def _pause_handler(self):
-        while not self._continue_event.flag:
-            if self._stop_event.flag:
-                self._pause_event.reset()
-                self._continue_event.reset()
+        while not self._continue_flag:
+            if self._stop_flag:
+                self._pause_flag = False
+                self._continue_flag = False
                 return
             time.sleep(Config.get('timings', 'resolution'))
-        self._continue_event.reset()
-        self._pause_event.reset()
+        self._continue_flag = False
+        self._pause_flag = False
 
     def _execution_handler(self):
         start_time = datetime.now()
         pause_time = None
         command_idx = 0
 
-        while not self._stop_event.flag:
+        while not self._stop_flag:
 
-            if self._pause_event.flag:
+            if self._pause_flag:
                 pause_time = datetime.now()
                 self._pause_handler()
                 start_time += (datetime.now() - pause_time)
@@ -128,20 +125,11 @@ class Program():
             timestamp = datetime.now() - start_time
             if command.timestamp.total_seconds <= timestamp.total_seconds():
                 command.fire()
-                self.fired_event(
-                    sender=self,
-                    raw_address=command.address.raw_address
-                )
                 command_idx += 1
                 if command_idx >= len(self._command_list):
                     break
 
-        # for command in self._command_list:
-        #     command.join(
-        #         timeout=Config.get('timeouts', 'fire_thread')
-        #     )
-
-        self.program_finished_event(sender=self)
+        MasterCommunicator.notify_program_finished()
 
     @property
     def fuse_status(self):

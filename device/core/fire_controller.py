@@ -4,12 +4,12 @@ from functools import wraps
 from threading import Lock, Thread
 from time import sleep
 
-from ..util.simple_event import SimpleEvent
 from .address import Address
 from .config import Config
 from .fire_command import FireCommand
 from .hardware_controller import HardwareController, HardwareLocked
 from .program import Program
+from .master_communication import MasterCommunicator
 
 
 class FireControllerError(Exception):
@@ -129,10 +129,7 @@ class FireController():
     _schedule_thread = None
     _scheduled_time = None
 
-    _unschedule_event = SimpleEvent()
-    run_scheduled_program_event = SimpleEvent()
-    fired_event = SimpleEvent()
-    program_finished_event = SimpleEvent()
+    _unschedule_flag = False
 
     @classmethod
     def raise_on_state(
@@ -239,7 +236,7 @@ class FireController():
         cls.raise_on_state(ProgramState.RUNNING_STATES, ProgramRunning)
         cls.raise_on_state(ProgramState.NOT_RUNNING_STATES, NoProgramScheduled)
 
-        cls._unschedule_event(sender=cls)
+        cls._unschedule_flag = True
         cls._schedule_thread.join(
             timeout=Config.get('timeouts', 'schedule_thread')
         )
@@ -277,24 +274,12 @@ class FireController():
 
     @classmethod
     def _run_program(cls):
-        cls._program_fired_event_handler_id = (
-            cls.fired_event.add_simpleevent_handler(cls._program.fired_event)
-        )
-        cls._program_finished_event_handler_id = (
-            cls.program_finished_event.add_simpleevent_handler(
-                cls._program.program_finished_event
-            )
-        )
-        cls.program_finished_event.add_classmethod_handler(
-            cls._program_finished_handler,
-            cls_object=cls
-        )
         cls._program.run()
         cls._program_state = ProgramState.RUNNING
 
     @classmethod
     def _schedule_handler(cls):
-        while not cls._unschedule_event.flag:
+        while not cls._unschedule_flag:
             current_time = datetime.now()
             current_time_str = f"{current_time.hour:02}:" \
                 "{current_time.minute:02}:{current_time.second:02}"
@@ -305,22 +290,14 @@ class FireController():
             except Exception:
                 ...  # TODO
         else:
-            cls._unschedule_event.reset()
+            cls._unschedule_flag = False
             return
         try:
             cls._run_program()
         except Exception:
             ...  # TODO
-        cls.run_scheduled_program_event(sender=cls)
 
-    @classmethod
-    def _program_finished_handler(cls):
-        cls.fired_event.remove_handler(
-            cls._program_fired_event_handler_id
-        )
-        cls.program_finished_event.remove_handler(
-            cls._program_finished_event_handler_id
-        )
+        MasterCommunicator.notify_run_scheduled_program()
 
     @classmethod
     def get_program_state(cls):

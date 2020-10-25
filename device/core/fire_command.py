@@ -2,6 +2,7 @@ import time
 from threading import Thread
 
 from .config import Config
+from .master_communication import MasterCommunicator
 from .hardware_controller import HardwareController
 
 
@@ -59,6 +60,11 @@ class FireCommand():
             HardwareController.unlight(self._address)
         except Exception:
             ...  # TODO
+
+        MasterCommunicator.notify_fired(
+            sender=self,
+            raw_address=self.address.raw_address
+        )
 
         self._fireing, self._fired = False, True
 

@@ -5,9 +5,7 @@ from threading import Thread
 
 import requests
 
-from ..util.simple_event import SimpleEvent
 from .config import Config
-from .fire_controller import FireController
 
 
 class MasterCommunicatorError(Exception):
@@ -30,18 +28,20 @@ class MasterCommunicator():
     _master_address = None
     _master_port = None
 
-    _stop_notification_event = SimpleEvent()
-    _stop_heartbeat_event = SimpleEvent()
+    _stop_notification_flag = False
+    _stop_heartbeat_flag = False
 
     @classmethod
     def register_master(cls, address, port):
         cls._master_address = address
         cls._master_port = port
         cls._notification_url = (
-            f"http://{cls._master_address}:{cls._master_port}/master/notification"
+            f"http://{cls._master_address}:"
+            f"{cls._master_port}/master/notification"
         )
         cls._heartbeat_url = (
-            f"http://{cls._master_address}:{cls._master_port}/master/heartbeat"
+            f"http://{cls._master_address}:"
+            f"{cls._master_port}/master/heartbeat"
         )
 
         if not cls._notification_thread.is_alive():
@@ -65,12 +65,12 @@ class MasterCommunicator():
         cls._master_registered = False
         cls._notification_url = None
         cls._master_address = None
-        cls._stop_notification_event(sender=cls)
-        cls._stop_heartbeat_event(sender=cls)
+        cls._stop_notification = True
+        cls._stop_heartbeat = True
         cls._master_port = None
 
     @classmethod
-    def notify_run_scheduled_program(cls, sender):
+    def notify_run_scheduled_program(cls):
         cls._notify(
             data={
                 'type': 'run_scheduled_program',
@@ -79,7 +79,7 @@ class MasterCommunicator():
         )
 
     @classmethod
-    def notify_fired(cls, sender, raw_address):
+    def notify_fired(cls, raw_address):
         cls._notify(
             data={
                 'type': 'fired',
@@ -89,7 +89,7 @@ class MasterCommunicator():
         )
 
     @classmethod
-    def notify_program_finished(cls, sender):
+    def notify_program_finished(cls):
         cls._notify(
             data={
                 'type': 'program_finished',
@@ -114,13 +114,13 @@ class MasterCommunicator():
             'request_exception': 0
         }
 
-        while not cls._stop_notification_event.flag:
+        while not cls._stop_notification_flag:
             if cls._current_notification_data is None:
                 cls._current_notification_data = \
                     cls._notification_queue.get(block=True)
             success = False
 
-            while not cls._stop_notification_event.flag:
+            while not cls._stop_notification_flag:
                 try:
                     response = requests.post(
                         url=cls._notification_url,
@@ -160,7 +160,7 @@ class MasterCommunicator():
                     if not success:
                         time.sleep(Config.get('timings', 'notification_sleep'))
 
-        cls._stop_notification_event.reset()
+        cls._stop_notification_flag = False
 
     @classmethod
     def _heartbeat_handler(cls):
@@ -171,7 +171,7 @@ class MasterCommunicator():
             'request_exception': 0
         }
 
-        while not cls._stop_heartbeat_event.flag:
+        while not cls._stop_heartbeat_flag:
             try:
                 # response = requests.post(
                 #     url=cls._heartbeat_url,
@@ -214,18 +214,4 @@ class MasterCommunicator():
 
             time.sleep(Config.get('timings', 'heartbeat_period'))
 
-        cls._stop_heartbeat_event.reset()
-
-
-FireController.run_scheduled_program_event.add_classmethod_handler(
-    MasterCommunicator.notify_run_scheduled_program,
-    cls_object=MasterCommunicator
-)
-FireController.fired_event.add_classmethod_handler(
-    MasterCommunicator.notify_fired,
-    cls_object=MasterCommunicator
-)
-FireController.program_finished_event.add_classmethod_handler(
-    MasterCommunicator.notify_program_finished,
-    cls_object=MasterCommunicator
-)
+        cls._stop_heartbeat_flag = False
