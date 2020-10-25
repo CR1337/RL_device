@@ -168,53 +168,20 @@ class MasterCommunicator():
 
     @classmethod
     def _heartbeat_handler(cls):
-        counters = {
-            'timeout': 0,
-            'http_error': 0,
-            'connection_error': 0,
-            'request_exception': 0
-        }
-
         while not cls._stop_heartbeat_flag:
             try:
-                # response = requests.post(
-                #     url=cls._heartbeat_url,
-                #     json={
-                #         'type': 'heartbeat',
-                #         'time': str(datetime.now()),
-                #         'device_id': Environment.get('DEVICE_ID')
-                #     },
-                #     timeout=Config.get('timeouts', 'notification')
-                # )
-                # response.raise_for_status()
-                # for key in counters.keys():
-                #     if counters[key] > 0:
-                #         counters[key] = 0
-                #         logger.info(
-                #             f"Success in _heartbeat_handler after "
-                #             + f"{counters[key]} times {key}."
-                #         )
-                ...
-
-            except requests.Timeout:
-                if counters['timeout'] == 0:
-                    ...  # TODO
-                counters['timeout'] += 1
-
-            except requests.HTTPError:
-                if counters['http_error'] == 0:
-                    ...  # TODO
-                counters['http_error'] += 1
-
-            except requests.ConnectionError:
-                if counters['connection_error'] == 0:
-                    ...  # TODO
-                counters['connection_error'] += 1
+                response = requests.post(
+                    url=cls._heartbeat_url,
+                    json={
+                        'time': str(datetime.now()),
+                        'device_id': Config.get('connection', 'device_id')
+                    },
+                    timeout=Config.get('timeouts', 'notification')
+                )
+                response.raise_for_status()
 
             except requests.RequestException:
-                if counters['request_exception'] == 0:
-                    ...  # TODO
-                counters['request_exception'] += 1
+                ...  # TODO
 
             time.sleep(Config.get('timings', 'heartbeat_period'))
 

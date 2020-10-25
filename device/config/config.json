@@ -20,7 +20,7 @@
         "ignition": 1.0,
         "registration_sleep": 1,
         "notification_sleep": 0.2,
-        "heartbeat_period": 0.2
+        "heartbeat_period": 0.5
     },
     "connection": {
         "internal_port": 5000,
