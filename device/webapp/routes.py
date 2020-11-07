@@ -1,4 +1,5 @@
 import sys
+import traceback
 from datetime import datetime
 from functools import wraps
 
@@ -22,11 +23,11 @@ def handle_exceptions(func):
         try:
             response = func(*args, **kwargs)
         except Exception:
-            exc_type, exc, traceback = sys.exc_info()
+            exc_type, exc, tb = sys.exc_info()
             content = {
                 'exception_type': str(exc_type),
                 'exception_args': vars(exc),
-                'traceback': str(traceback)
+                'traceback': traceback.extract_tb(tb)
             }
             status_code = status.HTTP_400_BAD_REQUEST
             response = make_response((content, status_code))
