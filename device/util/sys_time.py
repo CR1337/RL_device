@@ -4,9 +4,9 @@ from _datetime import datetime
 
 
 def set_system_time(
-    year=0,
-    month=0,
-    day=0,
+    year=2020,
+    month=12,
+    day=31,
     hour=0,
     minute=0,
     second=0,
