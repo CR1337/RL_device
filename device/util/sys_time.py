@@ -19,7 +19,6 @@ def set_system_time(
         ).isoformat()
         subprocess.call(shlex.split("timedatectl set-ntp false"))
         subprocess.call(shlex.split(f"sudo date -s '{time_string}'"))
-        subprocess.call(shlex.split("sudo hwclock -w"))
     except Exception:
         print("Could not change system time!")
 
