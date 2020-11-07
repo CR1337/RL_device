@@ -12,14 +12,14 @@ def set_system_time(
     second=0,
     millisecond=0
 ):
-    try:
-        time_string = datetime(
-            year, month, day,
-            hour, minute, second, millisecond
-        ).isoformat()
-        subprocess.call(shlex.split("timedatectl set-ntp false"))
-        subprocess.call(shlex.split(f"sudo date -s '{time_string}'"))
-    except Exception:
-        print("Could not change system time!")
+    # try:
+    time_string = datetime(
+        year, month, day,
+        hour, minute, second, millisecond
+    ).isoformat()
+    subprocess.call(shlex.split("timedatectl set-ntp false"))
+    subprocess.call(shlex.split(f"sudo date -s '{time_string}'"))
+    # except Exception:
+    #     print("Could not change system time!")
 
 # https://stackoverflow.com/questions/12081310/python-module-to-change-system-date-and-time
