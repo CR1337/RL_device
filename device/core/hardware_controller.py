@@ -167,7 +167,7 @@ class HardwareController():
             cls._write(
                 chip_address,
                 Address.REGISTER_ADDRESSES['lock'],
-                Address.REV_MASKS['lock']
+                Address.MASKS['unlock']
             )
 
     @classmethod

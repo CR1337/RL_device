@@ -45,6 +45,7 @@ class Address():
 
     MASKS = {
         'lock': 0x10,
+        'unlock': 0x00,
         'error_control': 0x80
     }
 
