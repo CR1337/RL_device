@@ -201,15 +201,6 @@ def route_system_time():
             {'system_time': datetime.now().isoformat()}
         )
     elif request.method == "POST":
-        data = request.get_json(force=True)
-        time_params = {  # TODO
-            'year': 2020, 'month': 12, 'day': 31,
-            'hour': 0, 'minute': 0, 'second': 0, 'millisecond': 0
-        }
-        for key in time_params.keys():
-            try:
-                time_params[key] = int(data[key])
-            except (ValueError, KeyError):
-                continue
-        set_system_time(**time_params)
+        time = request.get_json(force=True)['time']
+        set_system_time(time)
         return make_response(dict())

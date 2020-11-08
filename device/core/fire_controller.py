@@ -226,7 +226,7 @@ class FireController():
             target=cls._schedule_handler,
             name='__SCHEDULE_THREAD__'
         )
-        cls._scheduled_time = scheduled_time
+        cls._scheduled_time = datetime.fromisoformat(scheduled_time)
         cls._schedule_thread.start()
         cls._program_state = ProgramState.SCHEDULED
 
@@ -280,10 +280,10 @@ class FireController():
     @classmethod
     def _schedule_handler(cls):
         while not cls._unschedule_flag:
-            current_time = datetime.now()
-            current_time_str = f"{current_time.hour:02}:" \
-                "{current_time.minute:02}:{current_time.second:02}"
-            if current_time_str >= cls._scheduled_time:
+            # current_time = datetime.now()
+            # current_time_str = f"{current_time.hour:02}:" \
+            #     "{current_time.minute:02}:{current_time.second:02}"
+            if datetime.now() >= cls._scheduled_time:
                 break
             try:
                 sleep(Config.get('timings', 'resolution'))
