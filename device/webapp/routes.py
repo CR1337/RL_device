@@ -95,7 +95,7 @@ def route_program_control():
         FireController.stop_program()
     elif action == 'schedule':
         FireController.schedule_program(
-            request.get_json(force=True)['schedule_time']
+            request.get_json(force=True)['time']
         )
     elif action == 'unschedule':
         FireController.unschedule_program()
