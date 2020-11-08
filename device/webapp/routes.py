@@ -73,7 +73,10 @@ def route_program():
     if request.method == "DELETE":
         FireController.delete_program()
     elif request.method == "POST":
-        FireController.load_program(request.get_json(force=True)['commands'])
+        FireController.load_program(
+            request.get_json(force=True)['commands'],
+            request.get_json(force=True)['program_name']
+        )
 
     return make_response(dict())
 

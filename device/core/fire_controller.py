@@ -142,14 +142,14 @@ class FireController():
 
     @lock_interaction
     @classmethod
-    def load_program(cls, commands):
+    def load_program(cls, commands, program_name):
         cls.raise_on_state(ProgramState.RUNNING_STATES, ProgramRunning)
         cls.raise_on_state(
             ProgramState.SCHEDULED, ProgramScheduled, cls._scheduled_time
         )
         cls.raise_on_state(ProgramState.LOADED, ProgramLoaded)
 
-        cls._program = Program.from_command_list(commands)
+        cls._program = Program.from_command_list(commands, program_name)
         cls._program_state = ProgramState.LOADED
 
     @lock_interaction

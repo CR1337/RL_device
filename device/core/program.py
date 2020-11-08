@@ -41,9 +41,11 @@ class ProgramNotFinalized(ProgramError):
 
 class Program():
 
-    def __init__(self):
+    def __init__(self, program_name):
         self._command_list = list()
         self._thread = None
+
+        self._name = program_name
 
         self._pause_flag = False
         self._continue_flag = False
@@ -148,17 +150,21 @@ class Program():
                     result[letter][number + r] = 'staged'
         return result
 
+    @property
+    def name(self):
+        return self._name
+
     @classmethod
     def empty_fuse_status(cls):
         chips = Config.get('i2c', 'chip_addresses').keys()
         return {chip: (['none'] * 16) for chip in chips}
 
     @classmethod
-    def from_command_list(cls, commands):
+    def from_command_list(cls, commands, program_name):
         if not isinstance(commands, list):
             raise InvalidProgram()
 
-        program = Program()
+        program = Program(program_name)
 
         for raw_command in commands:
             try:
@@ -203,7 +209,7 @@ class Program():
 
     @classmethod
     def testloop_program(cls):
-        program = Program()
+        program = Program("__TESTLOOP__")
 
         address_list = Address.full_address_list()
         for address, timestamp in zip(
