@@ -226,7 +226,9 @@ class FireController():
             target=cls._schedule_handler,
             name='__SCHEDULE_THREAD__'
         )
+        print(scheduled_time)
         cls._scheduled_time = datetime.fromisoformat(scheduled_time)
+        print(cls._scheduled_time)
         cls._schedule_thread.start()
         cls._program_state = ProgramState.SCHEDULED
 
