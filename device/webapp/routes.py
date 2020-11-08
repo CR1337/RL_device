@@ -183,7 +183,10 @@ def route_master_listener():
             port=request.get_json(force=True)['port']
         )
         response = (
-            {'device_id': Config.get("connection", 'device_id')},
+            {
+                'device_id': Config.get("connection", 'device_id'),
+                'n_chips': len(Config.get("i2c", "chip_addresses"))
+            },
             status.HTTP_202_ACCEPTED
         )
     elif request.method == "DELETE":
