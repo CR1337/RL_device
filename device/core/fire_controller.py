@@ -282,9 +282,6 @@ class FireController():
     @classmethod
     def _schedule_handler(cls):
         while not cls._unschedule_flag:
-            # current_time = datetime.now()
-            # current_time_str = f"{current_time.hour:02}:" \
-            #     "{current_time.minute:02}:{current_time.second:02}"
             if datetime.now().replace(tzinfo=None) >= cls._scheduled_time:
                 break
             try:
