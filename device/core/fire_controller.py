@@ -228,7 +228,7 @@ class FireController():
             target=cls._schedule_handler,
             name='__SCHEDULE_THREAD__'
         )
-        cls._scheduled_time = dateutil.parser.parse(scheduled_time).replace(tzinfo=pytz.UTC)
+        cls._scheduled_time = dateutil.parser.parse(scheduled_time).replace(tzinfo=None)
         cls._schedule_thread.start()
         cls._program_state = ProgramState.SCHEDULED
 
@@ -285,7 +285,7 @@ class FireController():
             # current_time = datetime.now()
             # current_time_str = f"{current_time.hour:02}:" \
             #     "{current_time.minute:02}:{current_time.second:02}"
-            if datetime.now().replace(tzinfo=pytz.UTC) >= cls._scheduled_time:
+            if datetime.now().replace(tzinfo=None) >= cls._scheduled_time:
                 break
             try:
                 sleep(Config.get('timings', 'resolution'))
