@@ -3,6 +3,7 @@ from enum import Enum, unique
 from functools import wraps
 from threading import Lock, Thread
 from time import sleep
+import dateutil.parser
 
 from .address import Address
 from .config import Config
@@ -226,9 +227,7 @@ class FireController():
             target=cls._schedule_handler,
             name='__SCHEDULE_THREAD__'
         )
-        print(scheduled_time)
-        cls._scheduled_time = datetime.fromisoformat(scheduled_time)
-        print(cls._scheduled_time)
+        cls._scheduled_time = dateutil.parser.parse(scheduled_time)
         cls._schedule_thread.start()
         cls._program_state = ProgramState.SCHEDULED
 
