@@ -4,7 +4,7 @@ from threading import Thread
 
 import numpy as np
 
-from .master_communication import MasterCommunicator
+# from .master_communication import MasterCommunicator
 from .address import Address
 from .config import Config
 from .fire_command import FireCommand
