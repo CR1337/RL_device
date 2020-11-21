@@ -7,10 +7,10 @@ from flask import Blueprint, make_response, render_template, request
 from flask_api import status
 
 from ..core.config import Config
-from ..core.fire_command import FireCommand
+# from ..core.fire_command import FireCommand
 from ..core.fire_controller import FireController
 from ..core.hardware_controller import HardwareController
-from ..core.address import Address
+# from ..core.address import Address
 from ..core.master_communication import MasterCommunicator
 from ..util.sys_time import set_system_time
 
@@ -120,12 +120,14 @@ def route_program_state():
 @api_bp.route("/fire", methods=["POST", "GET"], endpoint='route_fire')
 @handle_exceptions
 def route_fire():
-    address = Address(request.get_json(force=True)['address'])
-    fire_command = FireCommand(
-        address=address,
-        timestamp=0
-    )
-    fire_command.fire()
+    # address = Address(request.get_json(force=True)['address'])
+    # fire_command = FireCommand(
+    #     address=address,
+    #     timestamp=0
+    # )
+    # fire_command.fire()
+
+    FireController.fire(request.get_json(force=True)['address'])
     return make_response(dict())
 
 
