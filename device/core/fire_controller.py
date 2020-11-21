@@ -4,7 +4,6 @@ from functools import wraps
 from threading import Lock, Thread
 from time import sleep
 import dateutil.parser
-import pytz
 
 from .address import Address
 from .config import Config
