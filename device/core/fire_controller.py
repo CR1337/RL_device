@@ -308,3 +308,14 @@ class FireController():
             return Program.empty_fuse_status()
         else:
             return cls._program.fuse_status
+
+    @classmethod
+    def get_scheduled_time(cls):
+        return cls._scheduled_time
+
+    @classmethod
+    def get_program_name(cls):
+        if cls._program is None:
+            return None
+        else:
+            return cls._program.name

@@ -6,6 +6,9 @@ from threading import Thread
 import requests
 
 from .config import Config
+from ..util.sys_time import get_system_time
+from .hardware_controller import HardwareController
+from .fire_controller import FireController
 
 
 class MasterCommunicatorError(Exception):
@@ -173,8 +176,14 @@ class MasterCommunicator():
                 response = requests.post(
                     url=cls._heartbeat_url,
                     json={
-                        'time': str(datetime.now()),
-                        'device_id': Config.get('connection', 'device_id')
+                        'device_id': Config.get('connection', 'device_id'),
+                        'time': get_system_time(),
+                        'locked': HardwareController.is_locked(),
+                        'program_state': FireController.get_program_state(),
+                        'scheduled_time': FireController.get_scheduled_time(),
+                        'program_name': FireController.get_program_name(),
+                        'fuse_states': FireController.get_fuse_status(),
+                        'error_states': HardwareController.errors()
                     },
                     timeout=Config.get('timeouts', 'notification')
                 )
