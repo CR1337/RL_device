@@ -297,7 +297,7 @@ class FireController():
         except Exception:
             ...  # TODO
 
-        MasterCommunicator.notify_run_scheduled_program()
+        # MasterCommunicator.notify_run_scheduled_program()
 
     @classmethod
     def get_program_state(cls):

@@ -131,7 +131,7 @@ class Program():
                 if command_idx >= len(self._command_list):
                     break
 
-        MasterCommunicator.notify_program_finished()
+        # MasterCommunicator.notify_program_finished()
 
     @property
     def fuse_status(self):
