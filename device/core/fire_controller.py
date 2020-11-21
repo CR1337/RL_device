@@ -10,7 +10,7 @@ from .config import Config
 from .fire_command import FireCommand
 from .hardware_controller import HardwareController, HardwareLocked
 from .program import Program
-from .master_communication import MasterCommunicator
+# from .master_communication import MasterCommunicator
 
 
 class FireControllerError(Exception):
