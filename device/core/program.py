@@ -51,6 +51,8 @@ class Program():
         self._continue_flag = False
         self._stop_flag = False
 
+        self._start_time = None
+
         self._finalized = False
 
     def add_command(self, command):
@@ -110,7 +112,7 @@ class Program():
         self._pause_flag = False
 
     def _execution_handler(self):
-        start_time = datetime.now()
+        self._start_time = datetime.now()
         pause_time = None
         command_idx = 0
 
@@ -119,19 +121,17 @@ class Program():
             if self._pause_flag:
                 pause_time = datetime.now()
                 self._pause_handler()
-                start_time += (datetime.now() - pause_time)
+                self._start_time += (datetime.now() - pause_time)
 
             time.sleep(Config.get('timings', 'resolution'))
 
             command = self._command_list[command_idx]
-            timestamp = datetime.now() - start_time
+            timestamp = datetime.now() - self._start_time
             if command.timestamp.total_seconds <= timestamp.total_seconds():
                 command.fire()
                 command_idx += 1
                 if command_idx >= len(self._command_list):
                     break
-
-        # MasterCommunicator.notify_program_finished()
 
     @property
     def fuse_status(self):
@@ -143,11 +143,18 @@ class Program():
 
             for r in range(range_):
                 if command.fired:
-                    result[letter][number + r] = 'fired'
+                    result[letter][number + r] = {'state': 'fired'}
                 elif command.fireing:
-                    result[letter][number + r] = 'fireing'
+                    result[letter][number + r] = {'state': 'fireing'}
                 else:
-                    result[letter][number + r] = 'staged'
+                    result[letter][number + r] = {
+                        'state': 'staged',
+                        'fire_countdown': max(
+                            0,
+                            command.timestamp.total_seconds
+                            - self._start_time.total_seconds()
+                        )
+                    }
         return result
 
     @property
