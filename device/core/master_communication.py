@@ -190,6 +190,7 @@ class MasterCommunicator():
                 response.raise_for_status()
 
             except requests.RequestException:
+                print("requests.RequestException!")
                 ...  # TODO
 
             time.sleep(Config.get('timings', 'heartbeat_period'))
