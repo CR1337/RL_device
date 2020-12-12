@@ -9,6 +9,6 @@ def set_system_time(time):
 
 
 def get_system_time():
-    datetime.now().replace(tzinfo=None).isoformat()
+    return datetime.now().replace(tzinfo=None).isoformat()
 
 # https://stackoverflow.com/questions/12081310/python-module-to-change-system-date-and-time

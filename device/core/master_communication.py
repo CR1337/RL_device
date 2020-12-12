@@ -53,12 +53,12 @@ class MasterCommunicator():
         #         name="notification_handler"
         #     )
         #     cls._notification_thread.start()
-        # if not cls._heartbeat_thread.is_alive():
-        #     cls._heartbeat_thread = Thread(
-        #         target=cls._heartbeat_handler,
-        #         name="heartbeat_handler"
-        #     )
-        #     cls._heartbeat_thread.start()
+        if not cls._heartbeat_thread.is_alive():
+            cls._heartbeat_thread = Thread(
+                target=cls._heartbeat_handler,
+                name="heartbeat_handler"
+            )
+            cls._heartbeat_thread.start()
         cls._master_registered = True
 
     @classmethod
@@ -177,7 +177,7 @@ class MasterCommunicator():
                     url=cls._heartbeat_url,
                     json={
                         'device_id': Config.get('connection', 'device_id'),
-                        'time': get_system_time(),
+                        'system_time': get_system_time(),
                         'locked': HardwareController.is_locked(),
                         'program_state': FireController.get_program_state(),
                         'scheduled_time': FireController.get_scheduled_time(),
