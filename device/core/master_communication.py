@@ -190,6 +190,7 @@ class MasterCommunicator():
                 response.raise_for_status()
 
             except requests.RequestException:
+                print(cls._heartbeat_url)
                 print("requests.RequestException!")
                 ...  # TODO
 
