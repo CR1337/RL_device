@@ -149,11 +149,7 @@ class Program():
                 else:
                     result[letter][number + r] = {
                         'state': 'staged',
-                        'fire_countdown': max(
-                            0,
-                            command.timestamp.total_seconds
-                            - self._start_time.total_seconds()
-                        )
+                        'progress': 0.5
                     }
         return result
 
