@@ -93,6 +93,7 @@ class HardwareController():
     def _write(cls, i2c_address, register_address, value):
         try:
             cls.BUS.write_byte_data(i2c_address, register_address, value)
+            print(f"WRITE {value} TO {i2c_address}:{register_address}")
         except OSError:
             raise WriteError(
                 Config.get('i2c', 'bus_address'),
@@ -105,6 +106,7 @@ class HardwareController():
     def _read(cls, i2c_address, register_address):
         try:
             value = cls.BUS.read_byte_data(i2c_address, register_address)
+            print(f"READ {value} FROM {i2c_address}:{register_address}")
             return value
         except OSError:
             raise ReadError(
