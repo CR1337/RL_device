@@ -61,10 +61,6 @@ class FireCommand():
         except Exception:
             ...  # TODO
 
-        # MasterCommunicator.notify_fired(
-        #     raw_address=self.address.raw_address
-        # )
-
         self._fireing, self._fired = False, True
 
     def fire(self):

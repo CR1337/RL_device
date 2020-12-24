@@ -176,7 +176,7 @@ class Program():
                 hours = raw_command['h']
                 minutes = raw_command['m']
                 seconds = raw_command['s']
-                milliseconds = raw_command['ms']
+                deciseconds = raw_command['ms']
                 if 'name' in raw_command:
                     name = raw_command['name']
                 else:
@@ -195,7 +195,7 @@ class Program():
                 hours=hours,
                 minutes=minutes,
                 seconds=seconds,
-                deciseconds=milliseconds  # TODO!
+                deciseconds=deciseconds
             )
 
             command = FireCommand(

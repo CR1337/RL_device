@@ -56,7 +56,12 @@ class Address():
 
     ADDRESS_TUPLE_RANGE = product(
         Config.get('i2c', 'chip_addresses').values(),
-        [0x00, 0x01, 0x14, 0x15, 0x16, 0x17, 0x1d, 0x1e]  # TODO: as function of REGISTER_ADDRESSES
+        [
+            REGISTER_ADDRESSES['lock'],
+            REGISTER_ADDRESSES['error_control'],
+            *REGISTER_ADDRESSES['fuse'],
+            *REGISTER_ADDRESSES['error']
+        ]
     )
 
     _REGEX_STRINGS = {

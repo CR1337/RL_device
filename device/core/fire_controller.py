@@ -108,19 +108,18 @@ def raise_on_lock(func):
     return wrapper
 
 
-# FIXME: Why is states not defined?
-def raise_on_state(states, exception, *exception_args, **exception_kwargs):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            if not isinstance(states, [list, tuple]):
-                states = [states]  # noqa: F841, F823
-            if FireController._program_state in states:
-                raise exception(*exception_args, **exception_kwargs)
-            else:
-                func(*args, **kwargs)
-        return wrapper
-    return decorator
+# def raise_on_state(states, exception, *exception_args, **exception_kwargs):
+#     def decorator(func):
+#         @wraps(func)
+#         def wrapper(*args, **kwargs):
+#             if not isinstance(states, [list, tuple]):
+#                 states = [states]  # noqa: F841, F823
+#             if FireController._program_state in states:
+#                 raise exception(*exception_args, **exception_kwargs)
+#             else:
+#                 func(*args, **kwargs)
+#         return wrapper
+#     return decorator
 
 
 class FireController():
@@ -296,8 +295,6 @@ class FireController():
             cls._run_program()
         except Exception:
             ...  # TODO
-
-        # MasterCommunicator.notify_run_scheduled_program()
 
     @classmethod
     def get_program_state(cls):
