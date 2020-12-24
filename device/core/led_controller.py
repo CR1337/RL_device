@@ -1,13 +1,11 @@
 class LedController():
 
     @classmethod
-    def initialize(cls):
-        # optional
+    def __init__(cls):
         pass
 
     @classmethod
-    def shutdown(cls):
-        # optional
+    def __del__(cls):
         pass
 
     @classmethod
