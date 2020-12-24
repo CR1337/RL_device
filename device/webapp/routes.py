@@ -27,6 +27,7 @@ def handle_exceptions(func):
                 'exception_args': vars(exc),
                 'traceback': traceback.extract_tb(tb).format()
             }
+            print(content)
             status_code = status.HTTP_400_BAD_REQUEST
             response = make_response((content, status_code))
         finally:
