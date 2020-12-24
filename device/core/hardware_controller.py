@@ -144,13 +144,13 @@ class HardwareController():
         )
         cls.LOCKS[address.address_tuple].release()
 
-    @classmethod
-    def unlight_all(cls):
-        for chip_address, register_address in product(
-            Config.get('i2c', 'chip_addresses').items(),
-            Address.REGISTER_ADDRESSES['fuse']
-        ):
-            cls._write(chip_address, register_address, 0x00)
+    # @classmethod
+    # def unlight_all(cls):
+    #     for chip_address, register_address in product(
+    #         Config.get('i2c', 'chip_addresses').items(),
+    #         Address.REGISTER_ADDRESSES['fuse']
+    #     ):
+    #         cls._write(chip_address, register_address, 0x00)
 
     @classmethod
     def lock(cls):
@@ -170,27 +170,27 @@ class HardwareController():
                 Address.MASKS['unlock']
             )
 
-    @classmethod
-    def clear_error_flags(cls):
-        for chip_address in Config.get('i2c', 'chip_addresses').keys():
-            cls.ERROR_CONTROL_LOCKS[chip_address].acquire(blocking=True)
-            value = cls._read(
-                chip_address,
-                Address.REGISTER_ADDRESSES['error_control']
-            )
-            value |= Address.MASKS['error_control']
-            cls._write(
-                chip_address,
-                Address.REGISTER_ADDRESSES['error_control'],
-                value
-            )
-            value &= Address.REV_MASKS['error_control']
-            cls._write(
-                chip_address,
-                Address.REGISTER_ADDRESSES['error_control'],
-                value
-            )
-            cls.ERROR_CONTROL_LOCKS[chip_address].release()
+    # @classmethod
+    # def clear_error_flags(cls):
+    #     for chip_address in Config.get('i2c', 'chip_addresses').keys():
+    #         cls.ERROR_CONTROL_LOCKS[chip_address].acquire(blocking=True)
+    #         value = cls._read(
+    #             chip_address,
+    #             Address.REGISTER_ADDRESSES['error_control']
+    #         )
+    #         value |= Address.MASKS['error_control']
+    #         cls._write(
+    #             chip_address,
+    #             Address.REGISTER_ADDRESSES['error_control'],
+    #             value
+    #         )
+    #         value &= Address.REV_MASKS['error_control']
+    #         cls._write(
+    #             chip_address,
+    #             Address.REGISTER_ADDRESSES['error_control'],
+    #             value
+    #         )
+    #         cls.ERROR_CONTROL_LOCKS[chip_address].release()
 
     @classmethod
     def is_locked(cls):

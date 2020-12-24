@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum, unique
-from functools import wraps
+# from functools import wraps
 from threading import Lock, Thread
 from time import sleep
 import dateutil.parser
@@ -79,9 +79,9 @@ class ProgramState(Enum):
         UNLOADED
     ]
 
-    @classmethod
-    def string(cls):
-        return super().__str__().split('.')[-1]
+    # @classmethod
+    # def string(cls):
+    #     return super().__str__().split('.')[-1]
 
 
 def lock_interaction(func):
