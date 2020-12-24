@@ -147,6 +147,15 @@ class Program():
                 elif command.fireing:
                     result[letter][number + r] = {'state': 'fireing'}
                 else:
+
+                    remaining_seconds = command.timestamp.total_seconds - \
+                        (datetime.now() - self._start_time).total_seconds()
+
+                    progress = remaining_seconds / \
+                        command.timestamp.total_seconds
+
+                    progress = progress if progress >= 0.0 else 0.0
+
                     result[letter][number + r] = {
                         'state': 'staged',
                         'progress': 0.5
@@ -181,7 +190,7 @@ class Program():
                     name = raw_command['name']
                 else:
                     name = ""
-                if ' description' in raw_command:
+                if 'description' in raw_command:
                     description = raw_command['description']
                 else:
                     description = ""
