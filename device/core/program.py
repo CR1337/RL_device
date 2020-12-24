@@ -108,6 +108,7 @@ class Program():
                 self._continue_flag = False
                 return
             time.sleep(Config.get('timings', 'resolution'))
+            # TODO: update start_time
         self._continue_flag = False
         self._pause_flag = False
 
