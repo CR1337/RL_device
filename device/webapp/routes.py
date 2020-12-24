@@ -3,14 +3,12 @@ import traceback
 from datetime import datetime
 from functools import wraps
 
-from flask import Blueprint, make_response, render_template, request
+from flask import Blueprint, make_response, request
 from flask_api import status
 
 from ..core.config import Config
-# from ..core.fire_command import FireCommand
 from ..core.fire_controller import FireController
 from ..core.hardware_controller import HardwareController
-# from ..core.address import Address
 from ..core.master_communication import MasterCommunicator
 from ..util.sys_time import set_system_time
 
@@ -36,35 +34,35 @@ def handle_exceptions(func):
     return wrapper
 
 
-@api_bp.route("/", methods=["GET"], endpoint='route_main')
-def route_main():
-    return render_template(
-        "index.html",
-        device_id=Config.get("connection", 'device_id'),
-        port=Config.get("connection", 'external_port'),
-        time=datetime.now()
-    )
+# @api_bp.route("/", methods=["GET"], endpoint='route_main')
+# def route_main():
+#     return render_template(
+#         "index.html",
+#         device_id=Config.get("connection", 'device_id'),
+#         port=Config.get("connection", 'external_port'),
+#         time=datetime.now()
+#     )
 
 
-@api_bp.route("/config", methods=["GET", "POST"], endpoint='route_config')
-@handle_exceptions
-def route_config():
-    if request.method == "GET":
-        if 'category' in request.args:
-            if 'key' in request.args:
-                value = Config.get(
-                    request.args['category'],
-                    request.args['key']
-                )
-                return {request.args['key']: value}
-            else:
-                response = Config.get_category(request.args['category'])
-        else:
-            response = Config.get_all()
-    elif request.method == "POST":
-        Config.update_many(request.get_json(force=True)['entries'])
-        response = dict()
-    return make_response(response)
+# @api_bp.route("/config", methods=["GET", "POST"], endpoint='route_config')
+# @handle_exceptions
+# def route_config():
+#     if request.method == "GET":
+#         if 'category' in request.args:
+#             if 'key' in request.args:
+#                 value = Config.get(
+#                     request.args['category'],
+#                     request.args['key']
+#                 )
+#                 return {request.args['key']: value}
+#             else:
+#                 response = Config.get_category(request.args['category'])
+#         else:
+#             response = Config.get_all()
+#     elif request.method == "POST":
+#         Config.update_many(request.get_json(force=True)['entries'])
+#         response = dict()
+#     return make_response(response)
 
 
 @api_bp.route("/program", methods=["POST", "DELETE"], endpoint='route_program')
@@ -108,33 +106,26 @@ def route_program_control():
     return make_response(dict())
 
 
-@api_bp.route(
-    "/program/state",
-    methods=["GET"], endpoint='route_program_state'
-)
-@handle_exceptions
-def route_program_state():
-    return make_response({'state': FireController.get_program_state()})
+# @api_bp.route(
+#     "/program/state",
+#     methods=["GET"], endpoint='route_program_state'
+# )
+# @handle_exceptions
+# def route_program_state():
+#     return make_response({'state': FireController.get_program_state()})
 
 
 @api_bp.route("/fire", methods=["POST", "GET"], endpoint='route_fire')
 @handle_exceptions
 def route_fire():
-    # address = Address(request.get_json(force=True)['address'])
-    # fire_command = FireCommand(
-    #     address=address,
-    #     timestamp=0
-    # )
-    # fire_command.fire()
-
     FireController.fire(request.get_json(force=True)['address'])
     return make_response(dict())
 
 
-@api_bp.route("/fuses", methods=["GET"], endpoint='route_fuses')
-@handle_exceptions
-def route_fuses():
-    return make_response(FireController.get_fuse_status())
+# @api_bp.route("/fuses", methods=["GET"], endpoint='route_fuses')
+# @handle_exceptions
+# def route_fuses():
+#     return make_response(FireController.get_fuse_status())
 
 
 @api_bp.route("/testloop", methods=["POST"], endpoint='route_testloop')
@@ -161,15 +152,15 @@ def route_lock():
         return make_response(dict())
 
 
-@api_bp.route("/errors", methods=["GET", "DELETE"], endpoint='route_errors')
-@handle_exceptions
-def route_errors():
-    if request.method == "GET":
-        response = HardwareController.errors()
-    elif request.method == "DELETE":
-        HardwareController.clear_error_flags()
-        response = dict()
-    return make_response(response)
+# @api_bp.route("/errors", methods=["GET", "DELETE"], endpoint='route_errors')
+# @handle_exceptions
+# def route_errors():
+#     if request.method == "GET":
+#         response = HardwareController.errors()
+#     elif request.method == "DELETE":
+#         HardwareController.clear_error_flags()
+#         response = dict()
+#     return make_response(response)
 
 
 @api_bp.route(
