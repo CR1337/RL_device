@@ -107,7 +107,7 @@ class HardwareController():
     def _read(cls, i2c_address, register_address):
         try:
             value = cls.BUS.read_byte_data(i2c_address, register_address)
-            print(f"READ {value} FROM {i2c_address}:{register_address}")
+            # print(f"READ {value} FROM {i2c_address}:{register_address}")
             return value
         except OSError:
             raise ReadError(
