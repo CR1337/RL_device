@@ -74,10 +74,11 @@ class BusError(HardwareError, OSError):
 
 class HardwareController():
 
-    LOCKS = {
-        address_tuple: Lock()
-        for address_tuple in Address.ADDRESS_TUPLE_RANGE
-    }
+    # LOCKS = {
+    #     address_tuple: Lock()
+    #     for address_tuple in Address.ADDRESS_TUPLE_RANGE
+    # }
+    LOCK = Lock()
     ERROR_CONTROL_LOCKS = {
         chip_address: Lock()
         for chip_address in Config.get('i2c', 'chip_addresses').keys()
@@ -117,7 +118,8 @@ class HardwareController():
 
     @classmethod
     def light(cls, address):
-        cls.LOCKS[address.address_tuple].acquire(blocking=True)
+        # cls.LOCKS[address.address_tuple].acquire(blocking=True)
+        cls.LOCK.acquire(blocking=True)
         value = cls._read(
             address.chip_address,
             address.register_address
@@ -129,11 +131,13 @@ class HardwareController():
             address.register_address,
             value
         )
-        cls.LOCKS[address.address_tuple].release()
+        # cls.LOCKS[address.address_tuple].release()
+        cls.LOCK.release()
 
     @classmethod
     def unlight(cls, address):
-        cls.LOCKS[address.address_tuple].acquire(blocking=True)
+        # cls.LOCKS[address.address_tuple].acquire(blocking=True)
+        cls.LOCK.acquire(blocking=True)
         value = cls._read(
             address.chip_address,
             address.register_address
@@ -144,7 +148,8 @@ class HardwareController():
             address.register_address,
             value
         )
-        cls.LOCKS[address.address_tuple].release()
+        # cls.LOCKS[address.address_tuple].release()
+        cls.LOCK.release()
 
     # @classmethod
     # def unlight_all(cls):
