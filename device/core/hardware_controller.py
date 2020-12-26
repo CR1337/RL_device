@@ -43,6 +43,10 @@ class HardwareError(Exception):
     pass
 
 
+class HardwareLocked(HardwareError):
+    pass
+
+
 class ReadError(HardwareError, OSError):
     def __init__(self, bus_address, i2c_address, register_address):
         self.bus_address = bus_address
