@@ -161,21 +161,25 @@ class HardwareController():
 
     @classmethod
     def lock(cls):
+        cls.LOCK.acquire(blocking=True)
         for chip_address in Config.get('i2c', 'chip_addresses').values():
             cls._write(
                 chip_address,
                 Address.REGISTER_ADDRESSES['lock'],
                 Address.MASKS['lock']
             )
+        cls.LOCK.release()
 
     @classmethod
     def unlock(cls):
+        cls.LOCK.acquire(blocking=True)
         for chip_address in Config.get('i2c', 'chip_addresses').values():
             cls._write(
                 chip_address,
                 Address.REGISTER_ADDRESSES['lock'],
                 Address.MASKS['unlock']
             )
+        cls.LOCK.release()
 
     # @classmethod
     # def clear_error_flags(cls):
