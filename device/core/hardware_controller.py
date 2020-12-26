@@ -122,7 +122,6 @@ class HardwareController():
             address.register_address,
             value
         )
-        # cls.LOCKS[address.address_tuple].release()
         cls.LOCK.release()
 
     @classmethod
