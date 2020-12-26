@@ -74,15 +74,8 @@ class BusError(HardwareError, OSError):
 
 class HardwareController():
 
-    # LOCKS = {
-    #     address_tuple: Lock()
-    #     for address_tuple in Address.ADDRESS_TUPLE_RANGE
-    # }
     LOCK = Lock()
-    ERROR_CONTROL_LOCKS = {
-        chip_address: Lock()
-        for chip_address in Config.get('i2c', 'chip_addresses').keys()
-    }
+
     try:
         BUS = SMBus(Config.get('i2c', 'bus_address'))
     except TypeError:
@@ -107,7 +100,6 @@ class HardwareController():
     def _read(cls, i2c_address, register_address):
         try:
             value = cls.BUS.read_byte_data(i2c_address, register_address)
-            # print(f"READ {value} FROM {i2c_address}:{register_address}")
             return value
         except OSError:
             raise ReadError(
@@ -118,7 +110,6 @@ class HardwareController():
 
     @classmethod
     def light(cls, address):
-        # cls.LOCKS[address.address_tuple].acquire(blocking=True)
         cls.LOCK.acquire(blocking=True)
         value = cls._read(
             address.chip_address,
@@ -136,7 +127,6 @@ class HardwareController():
 
     @classmethod
     def unlight(cls, address):
-        # cls.LOCKS[address.address_tuple].acquire(blocking=True)
         cls.LOCK.acquire(blocking=True)
         value = cls._read(
             address.chip_address,
@@ -148,16 +138,7 @@ class HardwareController():
             address.register_address,
             value
         )
-        # cls.LOCKS[address.address_tuple].release()
         cls.LOCK.release()
-
-    # @classmethod
-    # def unlight_all(cls):
-    #     for chip_address, register_address in product(
-    #         Config.get('i2c', 'chip_addresses').items(),
-    #         Address.REGISTER_ADDRESSES['fuse']
-    #     ):
-    #         cls._write(chip_address, register_address, 0x00)
 
     @classmethod
     def lock(cls):
@@ -180,28 +161,6 @@ class HardwareController():
                 Address.MASKS['unlock']
             )
         cls.LOCK.release()
-
-    # @classmethod
-    # def clear_error_flags(cls):
-    #     for chip_address in Config.get('i2c', 'chip_addresses').keys():
-    #         cls.ERROR_CONTROL_LOCKS[chip_address].acquire(blocking=True)
-    #         value = cls._read(
-    #             chip_address,
-    #             Address.REGISTER_ADDRESSES['error_control']
-    #         )
-    #         value |= Address.MASKS['error_control']
-    #         cls._write(
-    #             chip_address,
-    #             Address.REGISTER_ADDRESSES['error_control'],
-    #             value
-    #         )
-    #         value &= Address.REV_MASKS['error_control']
-    #         cls._write(
-    #             chip_address,
-    #             Address.REGISTER_ADDRESSES['error_control'],
-    #             value
-    #         )
-    #         cls.ERROR_CONTROL_LOCKS[chip_address].release()
 
     @classmethod
     def is_locked(cls):
