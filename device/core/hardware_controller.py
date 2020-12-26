@@ -43,10 +43,6 @@ class HardwareError(Exception):
     pass
 
 
-class HardwareLocked(HardwareError):
-    pass
-
-
 class ReadError(HardwareError, OSError):
     def __init__(self, bus_address, i2c_address, register_address):
         self.bus_address = bus_address
@@ -163,16 +159,20 @@ class HardwareController():
 
     @classmethod
     def is_locked(cls):
+        result = False
+        cls.LOCK.acquire(blocking=True)
         for chip_addr in Config.get('i2c', 'chip_addresses').values():
             value = cls._read(chip_addr, Address.REGISTER_ADDRESSES['lock'])
             value &= Address.MASKS['lock']
             if value > 0:
-                return True
-        return False
+                result = True
+        cls.LOCK.release()
+        return result
 
     @classmethod
     def errors(cls):
-        return {
+        cls.LOCK.acquire(blocking=True)
+        result = {
             chip_letter: [
                 False if (value & mask) == 0 else True
                 for value, mask in product(
@@ -186,3 +186,5 @@ class HardwareController():
             for chip_letter, chip_address
             in Config.get('i2c', 'chip_addresses').items()
         }
+        cls.LOCK.release()
+        return result
