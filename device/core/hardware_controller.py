@@ -119,8 +119,8 @@ class HardwareController():
                 register_address
             )
 
-    @lock_bus
     @classmethod
+    @lock_bus
     def light(cls, address):
         # cls.LOCK.acquire(blocking=True)
         value = cls._read(
