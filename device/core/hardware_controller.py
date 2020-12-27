@@ -122,7 +122,6 @@ class HardwareController():
     @classmethod
     @lock_bus
     def light(cls, address):
-        # cls.LOCK.acquire(blocking=True)
         value = cls._read(
             address.chip_address,
             address.register_address
@@ -134,11 +133,10 @@ class HardwareController():
             address.register_address,
             value
         )
-        # cls.LOCK.release()
 
     @classmethod
+    @lock_bus
     def unlight(cls, address):
-        cls.LOCK.acquire(blocking=True)
         value = cls._read(
             address.chip_address,
             address.register_address
@@ -149,47 +147,42 @@ class HardwareController():
             address.register_address,
             value
         )
-        cls.LOCK.release()
 
     @classmethod
+    @lock_bus
     def lock(cls):
-        cls.LOCK.acquire(blocking=True)
         for chip_address in Config.get('i2c', 'chip_addresses').values():
             cls._write(
                 chip_address,
                 Address.REGISTER_ADDRESSES['lock'],
                 Address.MASKS['lock']
             )
-        cls.LOCK.release()
 
     @classmethod
+    @lock_bus
     def unlock(cls):
-        cls.LOCK.acquire(blocking=True)
         for chip_address in Config.get('i2c', 'chip_addresses').values():
             cls._write(
                 chip_address,
                 Address.REGISTER_ADDRESSES['lock'],
                 Address.MASKS['unlock']
             )
-        cls.LOCK.release()
 
     @classmethod
+    @lock_bus
     def is_locked(cls):
-        result = False
-        cls.LOCK.acquire(blocking=True)
         for chip_addr in Config.get('i2c', 'chip_addresses').values():
             value = cls._read(chip_addr, Address.REGISTER_ADDRESSES['lock'])
             value &= Address.MASKS['lock']
             if value > 0:
-                result = True
-        cls.LOCK.release()
-        return result
+                return True
+        return False
 
     @classmethod
+    @lock_bus
     def errors(cls):
         # maybe generates false errors?
-        cls.LOCK.acquire(blocking=True)
-        result = {
+        return {
             chip_letter: [
                 False if (value & mask) == 0 else True
                 for value, mask in product(
@@ -203,5 +196,3 @@ class HardwareController():
             for chip_letter, chip_address
             in Config.get('i2c', 'chip_addresses').items()
         }
-        cls.LOCK.release()
-        return result
