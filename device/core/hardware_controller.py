@@ -2,6 +2,7 @@ import json
 from itertools import product
 from threading import Lock
 import os
+from functools import wraps
 
 from .address import Address
 from .config import Config
@@ -72,6 +73,16 @@ class BusError(HardwareError, OSError):
         self.bus_address = bus_address
 
 
+def lock_bus(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        HardwareController.LOCK.acquire(blocking=True)
+        result = func(*args, **kwargs)
+        HardwareController.LOCK.release()
+        return result
+    return wrapper
+
+
 class HardwareController():
 
     LOCK = Lock()
@@ -108,9 +119,10 @@ class HardwareController():
                 register_address
             )
 
+    @lock_bus
     @classmethod
     def light(cls, address):
-        cls.LOCK.acquire(blocking=True)
+        # cls.LOCK.acquire(blocking=True)
         value = cls._read(
             address.chip_address,
             address.register_address
@@ -122,7 +134,7 @@ class HardwareController():
             address.register_address,
             value
         )
-        cls.LOCK.release()
+        # cls.LOCK.release()
 
     @classmethod
     def unlight(cls, address):
@@ -175,6 +187,7 @@ class HardwareController():
 
     @classmethod
     def errors(cls):
+        # maybe generates false errors?
         cls.LOCK.acquire(blocking=True)
         result = {
             chip_letter: [
