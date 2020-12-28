@@ -251,4 +251,6 @@ class Program():
             command = FireCommand(address, timestamp)
             program.add_command(command)
 
+        program.finalize()
+
         return program
