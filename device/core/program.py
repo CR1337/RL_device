@@ -163,7 +163,7 @@ class Program():
 
                     result[letter][number + r] = {
                         'state': 'staged',
-                        'progress': 0.5
+                        'progress': progress
                     }
         return result
 
