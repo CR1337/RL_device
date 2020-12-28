@@ -151,6 +151,8 @@ class Program():
                     result[letter][number + r] = {'state': 'fired'}
                 elif command.fireing:
                     result[letter][number + r] = {'state': 'fireing'}
+                elif self._start_time is None:
+                    result[letter][number + r] = {'state': 'staged'}
                 else:
 
                     remaining_seconds = command.timestamp.total_seconds - \
