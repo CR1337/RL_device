@@ -247,13 +247,21 @@ class FireController():
 
         testloop_program = Program.testloop_program()
         testloop_program.finalize()
-        testloop_program.run()
+        testloop_program.run(
+            callback=cls.program_state_setter_factory(UNLOADED)
+        )
         cls._program_state = RUNNING_TL
 
     @classmethod
     def _run_program(cls):
-        cls._program.run()
+        cls._program.run(callback=cls.program_state_setter_factory(UNLOADED))
         cls._program_state = RUNNING
+
+    @classmethod
+    def program_state_setter_factory(cls, program_state):
+        def program_state_setter():
+            cls._program_state = program_state
+        return program_state_setter
 
     @classmethod
     def _schedule_handler(cls):

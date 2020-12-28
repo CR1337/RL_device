@@ -4,7 +4,6 @@ from threading import Thread
 
 import numpy as np
 
-from .fire_controller import FireController, LOADED
 from .address import Address
 from .config import Config
 from .fire_command import FireCommand
@@ -55,6 +54,8 @@ class Program():
 
         self._finalized = False
 
+        self._callback = None
+
     def add_command(self, command):
         if self._finalized:
             raise ProgramFinalized()
@@ -65,9 +66,10 @@ class Program():
             raise ProgramFinalized()
         self._finalized = True
 
-    def run(self):
+    def run(self, callback):
         if not self._finalized:
             raise ProgramNotFinalized()
+        self._callback = callback
         self._thread = Thread(target=self._execution_handler)
         self._thread.name = "__program_execution_thread__"
         self._thread.start()
@@ -134,7 +136,7 @@ class Program():
                 if command_idx >= len(self._command_list):
                     break
 
-        FireController.set_program_state(LOADED)
+        self._callback()
 
     @property
     def fuse_status(self):
