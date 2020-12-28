@@ -102,6 +102,7 @@ class FireController():
     _program_state = UNLOADED
     _interaction_lock = Lock()
     _program = None
+    _testloop_program = None
     _schedule_thread = None
     _scheduled_time = None
 
@@ -245,8 +246,8 @@ class FireController():
         cls.raise_on_state(SCHEDULED,
                            ProgramScheduled, cls._scheduled_time)
 
-        testloop_program = Program.testloop_program()
-        testloop_program.run(
+        cls._testloop_program = Program.testloop_program()
+        cls._testloop_program.run(
             callback=cls.program_state_setter_factory(UNLOADED)
         )
         cls._program_state = RUNNING_TL
@@ -289,7 +290,7 @@ class FireController():
 
     @classmethod
     def get_fuse_status(cls):
-        if cls._program is None:
+        if cls._program is None and cls._testloop_program is None:
             return Program.empty_fuse_status()
         else:
             return cls._program.fuse_status
