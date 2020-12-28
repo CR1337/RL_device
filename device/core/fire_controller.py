@@ -246,7 +246,6 @@ class FireController():
                            ProgramScheduled, cls._scheduled_time)
 
         testloop_program = Program.testloop_program()
-        testloop_program.finalize()
         testloop_program.run(
             callback=cls.program_state_setter_factory(UNLOADED)
         )
