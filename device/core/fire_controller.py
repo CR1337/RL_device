@@ -51,33 +51,27 @@ class HangingScheduleThread(FireControllerError, RuntimeError):
         self.schedule_time = schedule_time
 
 
-@unique
-class ProgramState(Enum):
-    UNLOADED = 'unloaded'
-    LOADED = 'loaded'
-    RUNNING = 'running'
-    PAUSED = 'paused'
-    RUNNING_TL = 'running_testloop'
-    PAUSED_TL = 'paused_testloop'
-    SCHEDULED = 'scheduled'
-
-    RUNNING_STATES = [
-        RUNNING,
-        RUNNING_TL
-    ]
-
-    PAUSED_STATES = [
-        PAUSED,
-        PAUSED_TL
-    ]
-
-    RUNNING_PAUSED_STATES = \
-        RUNNING_STATES + PAUSED_STATES
-
-    NOT_RUNNING_STATES = [
-        LOADED,
-        UNLOADED
-    ]
+UNLOADED = 'unloaded'
+LOADED = 'loaded'
+RUNNING = 'running'
+PAUSED = 'paused'
+RUNNING_TL = 'running_testloop'
+PAUSED_TL = 'paused_testloop'
+SCHEDULED = 'scheduled'
+RUNNING_STATES = [
+    RUNNING,
+    RUNNING_TL
+]
+PAUSED_STATES = [
+    PAUSED,
+    PAUSED_TL
+]
+RUNNING_PAUSED_STATES = \
+    RUNNING_STATES + PAUSED_STATES
+NOT_RUNNING_STATES = [
+    LOADED,
+    UNLOADED
+]
 
 
 def lock_interaction(func):
@@ -105,7 +99,7 @@ def raise_on_lock(func):
 
 
 class FireController():
-    _program_state = ProgramState.UNLOADED
+    _program_state = UNLOADED
     _interaction_lock = Lock()
     _program = None
     _schedule_thread = None
@@ -125,84 +119,84 @@ class FireController():
     @lock_interaction
     @classmethod
     def load_program(cls, commands, program_name):
-        cls.raise_on_state(ProgramState.RUNNING_STATES, ProgramRunning)
+        cls.raise_on_state(RUNNING_STATES, ProgramRunning)
         cls.raise_on_state(
-            ProgramState.SCHEDULED, ProgramScheduled, cls._scheduled_time
+            SCHEDULED, ProgramScheduled, cls._scheduled_time
         )
-        cls.raise_on_state(ProgramState.LOADED, ProgramLoaded)
+        cls.raise_on_state(LOADED, ProgramLoaded)
 
         cls._program = Program.from_command_list(commands, program_name)
-        cls._program_state = ProgramState.LOADED
+        cls._program_state = LOADED
 
     @lock_interaction
     @classmethod
     def delete_program(cls):
-        cls.raise_on_state(ProgramState.RUNNING_PAUSED_STATES, ProgramRunning)
-        cls.raise_on_state(ProgramState.SCHEDULED,
+        cls.raise_on_state(RUNNING_PAUSED_STATES, ProgramRunning)
+        cls.raise_on_state(SCHEDULED,
                            ProgramScheduled, cls._scheduled_time)
-        cls.raise_on_state(ProgramState.UNLOADED, NoProgramLoaded)
+        cls.raise_on_state(UNLOADED, NoProgramLoaded)
 
         cls._program = None
-        cls._program_state = ProgramState.UNLOADED
+        cls._program_state = UNLOADED
 
     @raise_on_lock
     @lock_interaction
     @classmethod
     def run_program(cls):
-        cls.raise_on_state(ProgramState.RUNNING_PAUSED_STATES, ProgramRunning)
-        cls.raise_on_state(ProgramState.SCHEDULED,
+        cls.raise_on_state(RUNNING_PAUSED_STATES, ProgramRunning)
+        cls.raise_on_state(SCHEDULED,
                            ProgramScheduled, cls._scheduled_time)
-        cls.raise_on_state(ProgramState.UNLOADED, NoProgramLoaded)
+        cls.raise_on_state(UNLOADED, NoProgramLoaded)
 
         cls._run_program()
 
     @lock_interaction
     @classmethod
     def pause_program(cls):
-        cls.raise_on_state(ProgramState.NOT_RUNNING_STATES, NoProgramRunning)
-        cls.raise_on_state(ProgramState.PAUSED_STATES, ProgramPaused)
-        cls.raise_on_state(ProgramState.SCHEDULED,
+        cls.raise_on_state(NOT_RUNNING_STATES, NoProgramRunning)
+        cls.raise_on_state(PAUSED_STATES, ProgramPaused)
+        cls.raise_on_state(SCHEDULED,
                            ProgramScheduled, cls._scheduled_time)
 
         cls._program.pause()
-        if cls._program_state is ProgramState.RUNNING_TL:
-            cls._program_state = ProgramState.PAUSED_TL
+        if cls._program_state is RUNNING_TL:
+            cls._program_state = PAUSED_TL
         else:
-            cls._program_state = ProgramState.PAUSED
+            cls._program_state = PAUSED
 
     @raise_on_lock
     @lock_interaction
     @classmethod
     def continue_program(cls):
-        cls.raise_on_state(ProgramState.NOT_RUNNING_STATES, NoProgramRunning)
-        cls.raise_on_state(ProgramState.RUNNING_STATES, ProgramRunning)
-        cls.raise_on_state(ProgramState.SCHEDULED,
+        cls.raise_on_state(NOT_RUNNING_STATES, NoProgramRunning)
+        cls.raise_on_state(RUNNING_STATES, ProgramRunning)
+        cls.raise_on_state(SCHEDULED,
                            ProgramScheduled, cls._scheduled_time)
 
         cls._program.continue_()
-        if cls._program_state is ProgramState.PAUSED_TL:
-            cls._program_state = ProgramState.RUNNING_TL
+        if cls._program_state is PAUSED_TL:
+            cls._program_state = RUNNING_TL
         else:
-            cls._program_state = ProgramState.RUNNING
+            cls._program_state = RUNNING
 
     @lock_interaction
     @classmethod
     def stop_program(cls):
-        cls.raise_on_state(ProgramState.NOT_RUNNING_STATES, NoProgramRunning)
-        cls.raise_on_state(ProgramState.SCHEDULED,
+        cls.raise_on_state(NOT_RUNNING_STATES, NoProgramRunning)
+        cls.raise_on_state(SCHEDULED,
                            ProgramScheduled, cls._scheduled_time)
 
         cls._program.stop()
-        cls._program_state = ProgramState.LOADED
+        cls._program_state = LOADED
 
     @raise_on_lock
     @lock_interaction
     @classmethod
     def schedule_program(cls, scheduled_time):
-        cls.raise_on_state(ProgramState.RUNNING_STATES, ProgramRunning)
-        cls.raise_on_state(ProgramState.SCHEDULED,
+        cls.raise_on_state(RUNNING_STATES, ProgramRunning)
+        cls.raise_on_state(SCHEDULED,
                            ProgramScheduled, cls._scheduled_time)
-        cls.raise_on_state(ProgramState.UNLOADED, NoProgramLoaded)
+        cls.raise_on_state(UNLOADED, NoProgramLoaded)
 
         cls._schedule_thread = Thread(
             target=cls._schedule_handler,
@@ -212,13 +206,13 @@ class FireController():
             scheduled_time
         ).replace(tzinfo=None)
         cls._schedule_thread.start()
-        cls._program_state = ProgramState.SCHEDULED
+        cls._program_state = SCHEDULED
 
     @lock_interaction
     @classmethod
     def unschedule_program(cls):
-        cls.raise_on_state(ProgramState.RUNNING_STATES, ProgramRunning)
-        cls.raise_on_state(ProgramState.NOT_RUNNING_STATES, NoProgramScheduled)
+        cls.raise_on_state(RUNNING_STATES, ProgramRunning)
+        cls.raise_on_state(NOT_RUNNING_STATES, NoProgramScheduled)
 
         cls._unschedule_flag = True
         cls._schedule_thread.join(
@@ -227,15 +221,15 @@ class FireController():
         if cls._schedule_thread.is_alive():
             raise HangingScheduleThread(cls._scheduled_time)
         cls._schedule_thread = None
-        cls._program_state = ProgramState.LOADED
+        cls._program_state = LOADED
 
     @raise_on_lock
     @lock_interaction
     @classmethod
     def fire(cls, raw_address):
-        cls.raise_on_state(ProgramState.RUNNING_STATES, ProgramRunning)
-        cls.raise_on_state(ProgramState.LOADED, ProgramLoaded)
-        cls.raise_on_state(ProgramState.SCHEDULED,
+        cls.raise_on_state(RUNNING_STATES, ProgramRunning)
+        cls.raise_on_state(LOADED, ProgramLoaded)
+        cls.raise_on_state(SCHEDULED,
                            ProgramScheduled, cls._scheduled_time)
 
         address = Address(raw_address)
@@ -246,20 +240,20 @@ class FireController():
     @lock_interaction
     @classmethod
     def testloop(cls):
-        cls.raise_on_state(ProgramState.RUNNING_STATES, ProgramRunning)
-        cls.raise_on_state(ProgramState.LOADED, ProgramLoaded)
-        cls.raise_on_state(ProgramState.SCHEDULED,
+        cls.raise_on_state(RUNNING_STATES, ProgramRunning)
+        cls.raise_on_state(LOADED, ProgramLoaded)
+        cls.raise_on_state(SCHEDULED,
                            ProgramScheduled, cls._scheduled_time)
 
         testloop_program = Program.testloop_program()
         testloop_program.finalize()
         testloop_program.run()
-        cls._program_state = ProgramState.RUNNING_TL
+        cls._program_state = RUNNING_TL
 
     @classmethod
     def _run_program(cls):
         cls._program.run()
-        cls._program_state = ProgramState.RUNNING
+        cls._program_state = RUNNING
 
     @classmethod
     def _schedule_handler(cls):
@@ -280,7 +274,11 @@ class FireController():
 
     @classmethod
     def get_program_state(cls):
-        return str(cls._program_state).split('.')[-1]
+        return cls._program_state
+
+    @classmethod
+    def set_program_state(cls, program_state):
+        cls._program_state = program_state
 
     @classmethod
     def get_fuse_status(cls):

@@ -4,7 +4,7 @@ from threading import Thread
 
 import numpy as np
 
-from .fire_controller import ProgramState, FireController
+from .fire_controller import FireController, LOADED
 from .address import Address
 from .config import Config
 from .fire_command import FireCommand
@@ -134,7 +134,7 @@ class Program():
                 if command_idx >= len(self._command_list):
                     break
 
-        # TODO: set program state
+        FireController.set_program_state(LOADED)
 
     @property
     def fuse_status(self):
