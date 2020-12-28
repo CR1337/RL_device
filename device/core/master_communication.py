@@ -1,6 +1,4 @@
 import time
-# from datetime import datetime
-# from queue import Queue
 from threading import Thread
 
 import requests
@@ -52,7 +50,7 @@ class MasterCommunicator():
             raise NotRegistered()
         cls._master_registered = False
         cls._master_address = None
-        cls._stop_heartbeat = True
+        cls._stop_heartbeat_flag = True
         cls._master_port = None
 
     @classmethod
