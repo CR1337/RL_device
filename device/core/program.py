@@ -119,7 +119,7 @@ class Program():
         pause_time = None
         command_idx = 0
 
-        while not self._stop_flag:
+        while (not self._stop_flag) and len(self._command_list) > 0:
 
             if self._pause_flag:
                 pause_time = datetime.now()
