@@ -315,6 +315,8 @@ class FireController():
     def get_fuse_status(cls):
         if cls._program is None and cls._testloop_program is None:
             return Program.empty_fuse_status()
+        elif cls._program is None:
+            return cls._testloop_program.fuse_status
         else:
             return cls._program.fuse_status
 
