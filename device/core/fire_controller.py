@@ -248,20 +248,43 @@ class FireController():
 
         cls._testloop_program = Program.testloop_program()
         cls._testloop_program.run(
-            callback=cls.program_state_setter_factory(UNLOADED)
+            callback=cls._testloop_execution_callback_factory()
         )
         cls._program_state = RUNNING_TL
 
     @classmethod
     def _run_program(cls):
-        cls._program.run(callback=cls.program_state_setter_factory(UNLOADED))
+        cls._program.run(
+            callback=cls._program_execution_callback_factory()
+        )
         cls._program_state = RUNNING
 
     @classmethod
-    def program_state_setter_factory(cls, program_state):
+    def _program_state_setter_factory(cls, program_state):
         def program_state_setter():
             cls._program_state = program_state
         return program_state_setter
+
+    @classmethod
+    def _program_execution_callback_factory(cls):
+        state_setter = cls._program_state_setter_factory(UNLOADED)
+
+        def program_execution_callback():
+            state_setter()
+            cls._program = None
+            cls._testloop_program = None
+
+        return program_execution_callback
+
+    @classmethod
+    def _testloop_execution_callback_factory(cls):
+        state_setter = cls._program_state_setter_factory(cls._program_state)
+
+        def testloop_execution_callback():
+            state_setter()
+            cls._testloop_program = None
+
+        return testloop_execution_callback
 
     @classmethod
     def _schedule_handler(cls):

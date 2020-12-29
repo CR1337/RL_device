@@ -55,6 +55,7 @@ class Program():
         self._finalized = False
 
         self._callback = None
+        self._started = False
 
     def add_command(self, command):
         if self._finalized:
@@ -73,6 +74,7 @@ class Program():
         self._thread = Thread(target=self._execution_handler)
         self._thread.name = "__program_execution_thread__"
         self._thread.start()
+        self._started = True
 
     def pause(self):
         if not self._finalized:
@@ -151,7 +153,7 @@ class Program():
                     result[letter][number + r] = {'state': 'fired'}
                 elif command.fireing:
                     result[letter][number + r] = {'state': 'fireing'}
-                elif self._start_time is None:
+                elif not self._started:
                     result[letter][number + r] = {'state': 'staged'}
                 else:
 
@@ -172,6 +174,10 @@ class Program():
     @property
     def name(self):
         return self._name
+
+    @property
+    def started(self):
+        return self._started
 
     @classmethod
     def empty_fuse_status(cls):
