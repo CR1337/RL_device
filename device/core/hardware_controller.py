@@ -1,42 +1,9 @@
-import json
-import os
 from functools import wraps
 from itertools import product
 from threading import Lock
 
 from .address import Address
 from .config import Config
-
-if not os.path.exists("/dev/i2c-1"):
-    print("HARDWARE IS SIMULATED!")
-
-    class SMBus():
-
-        def __init__(self, bus_address):
-            self._data_filename = "device/simulation/simulation_data.json"
-
-        def write_byte_data(self, i2c_address, reg_address, value):
-            print("Write:", i2c_address, reg_address, value)
-            with open(
-                self._data_filename, 'r', encoding='utf-8'
-            ) as file:
-                simulation_data = json.load(file)
-            simulation_data[str(i2c_address)][reg_address] = value
-            with open(
-                self._data_filename, 'w', encoding='utf-8'
-            ) as file:
-                json.dump(simulation_data, file)
-
-        def read_byte_data(self, i2c_address, reg_address):
-            with open(
-                self._data_filename, 'r', encoding='utf-8'
-            ) as file:
-                simulation_data = json.load(file)
-            value = simulation_data[str(i2c_address)][reg_address]
-            print("Read:", i2c_address, reg_address, value)
-            return value
-else:
-    from smbus2 import SMBus
 
 
 class HardwareError(Exception):
