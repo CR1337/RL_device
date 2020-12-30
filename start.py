@@ -9,11 +9,11 @@ if __name__ == '__main__':
             use_debugger=True,
             use_reloader=True,
             passthrough_errors=True,
-            port=Config.get("connection", 'internal_port'),
+            port=Config.get("connection", 'port'),
             host="0.0.0.0"
         )
     else:
         app.run(
-            port=Config.get("connection", 'internal_port'),
+            port=Config.get("connection", 'port'),
             host="0.0.0.0"
         )

@@ -69,7 +69,7 @@ class MasterCommunicator():
                         'fuse_states': FireController.get_fuse_status(),
                         'error_states': HardwareController.errors()
                     },
-                    timeout=Config.get('timeouts', 'notification')
+                    timeout=Config.get('timeouts', 'heartbeat')
                 )
                 response.raise_for_status()
 
