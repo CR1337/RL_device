@@ -2,7 +2,6 @@ import time
 from threading import Thread
 
 from .config import Config
-# from .master_communication import MasterCommunicator
 from .hardware_controller import HardwareController
 
 

@@ -1,12 +1,11 @@
 import json
-from itertools import product
-from threading import Lock
 import os
 from functools import wraps
+from itertools import product
+from threading import Lock
 
 from .address import Address
 from .config import Config
-
 
 if not os.path.exists("/dev/i2c-1"):
     print("HARDWARE IS SIMULATED!")

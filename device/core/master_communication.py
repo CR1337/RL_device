@@ -3,10 +3,10 @@ from threading import Thread
 
 import requests
 
-from .config import Config
 from ..util.sys_time import get_system_time
-from .hardware_controller import HardwareController
+from .config import Config
 from .fire_controller import FireController
+from .hardware_controller import HardwareController
 
 
 class MasterCommunicatorError(Exception):

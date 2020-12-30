@@ -65,10 +65,6 @@ class Address():
     )
 
     _REGEX_STRINGS = {
-        'syntax': (
-            r"[A-Za-z](([048]|12(:[1-4])?)|([159]|13(:[1-3])?)"
-            + r"|([26]|(1[04])(:[1-2])?)|([37]|(1[15])(:1)?))"
-        ),
         'letter': r"(?P<letter>[A-Za-z])",
         'number': r"([A-Za-z])(?P<number>[0-9]|(1[0-5]))(:|$)",
         'range': r"(:)(?P<range>[1-4])"
@@ -81,8 +77,6 @@ class Address():
 
     def __init__(self, raw_address):
         self._raw_address = raw_address
-
-        # self._validate_syntax()
 
         self._letter = None
         self._number = None
@@ -100,10 +94,6 @@ class Address():
         self._fuse_mask = 0x00
         self._error_mask = 0x00
         self._calc_register_masks()
-
-    def _validate_syntax(self):
-        if not Address._REGEX_MODULES['syntax'].fullmatch(self._raw_address):
-            raise AddressSyntaxError(self._raw_address)
 
     def _extract_components(self):
         letter_match = Address._REGEX_MODULES['letter'].search(
