@@ -2,6 +2,8 @@ from functools import wraps
 from itertools import product
 from threading import Lock
 
+from smbus2 import SMBus
+
 from .address import Address
 from .config import Config
 
