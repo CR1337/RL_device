@@ -13,7 +13,7 @@ if __name__ == '__main__':
             host="0.0.0.0"
         )
     else:
-        app.run(port=Config.get(
-            "connection", 'internal_port'),
+        app.run(
+            port=Config.get("connection", 'internal_port'),
             host="0.0.0.0"
         )
