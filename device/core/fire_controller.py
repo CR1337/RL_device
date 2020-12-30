@@ -271,8 +271,8 @@ class FireController():
 
         def program_execution_callback():
             state_setter()
-            cls._program = None
-            cls._testloop_program = None
+            FireController._program = None
+            FireController._testloop_program = None
 
         return program_execution_callback
 
@@ -282,7 +282,7 @@ class FireController():
 
         def testloop_execution_callback():
             state_setter()
-            cls._testloop_program = None
+            FireController._testloop_program = None
 
         return testloop_execution_callback
 
